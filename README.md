@@ -66,7 +66,7 @@ Ambele servere trebuie să ruleze simultan pentru ca aplicația să funcționeze
 
 ## Testare
 
-Backend-ul are teste automate (pytest), care verifică fiecare endpoint fără intervenție manuală.
+**Backend** (pytest) — verifică fiecare endpoint fără intervenție manuală:
 
 ```bash
 cd backend
@@ -75,10 +75,17 @@ pip install pytest httpx
 pytest
 ```
 
+**Frontend** (Vitest + React Testing Library) — verifică randarea componentelor și interacțiunea cu API-ul (mock):
+
+```bash
+cd frontend
+npm install
+npm test
+```
+
 ## Posibile îmbunătățiri viitoare
 
 - Persistență reală a datelor (bază de date, ex. SQLite/PostgreSQL)
 - Autentificare utilizatori
 - Editarea unui task existent (PUT/PATCH)
-- Teste automate și pentru frontend (Jest/React Testing Library)
 - Containerizare cu Docker
