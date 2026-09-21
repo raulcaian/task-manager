@@ -6,6 +6,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 [![Tested with pytest](https://img.shields.io/badge/backend%20tests-pytest-0A9EDC)](https://docs.pytest.org/)
 [![Tested with Vitest](https://img.shields.io/badge/frontend%20tests-vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![CI](https://github.com/raulcaian/task-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/raulcaian/task-manager/actions/workflows/ci.yml)
 
 A full-stack task management app built to practice connecting a **React** frontend to a **Python (FastAPI)** REST API — with real request/response handling, error states, and automated tests on both sides.
 
@@ -19,7 +20,7 @@ The backend exposes a small REST API for managing tasks (create, list, delete), 
 - Automatic request validation on the backend (Pydantic)
 - Interactive, auto-generated API documentation (Swagger UI, at `/docs`)
 - Loading and error states on the frontend, driven by real API responses
-- Automated test suite for both backend and frontend
+- Automated test suite for both backend and frontend, run automatically on every push (CI)
 
 ## Tech stack
 
@@ -116,7 +117,6 @@ npm test
 - User authentication
 - Editing an existing task (PUT/PATCH)
 - Containerization with Docker
-- CI pipeline running both test suites on every push
 
 ## License
 
