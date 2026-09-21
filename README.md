@@ -64,10 +64,21 @@ Ambele servere trebuie să ruleze simultan pentru ca aplicația să funcționeze
 | POST   | `/tasks`             | Creează un task nou           |
 | DELETE | `/tasks/{task_id}`   | Șterge un task după id        |
 
+## Testare
+
+Backend-ul are teste automate (pytest), care verifică fiecare endpoint fără intervenție manuală.
+
+```bash
+cd backend
+source venv/bin/activate
+pip install pytest httpx
+pytest
+```
+
 ## Posibile îmbunătățiri viitoare
 
 - Persistență reală a datelor (bază de date, ex. SQLite/PostgreSQL)
 - Autentificare utilizatori
 - Editarea unui task existent (PUT/PATCH)
-- Testare automată (pytest pentru backend, Jest/React Testing Library pentru frontend)
+- Teste automate și pentru frontend (Jest/React Testing Library)
 - Containerizare cu Docker
