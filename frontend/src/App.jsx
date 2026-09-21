@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import './App.css';
 
-const API_URL = 'http://127.0.0.1:8000/tasks';
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/tasks';
 
 function App() {
   const [tasks, setTasks] = useState([]);
