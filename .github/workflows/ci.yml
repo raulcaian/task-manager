@@ -22,7 +22,7 @@ jobs:
           python-version: "3.14"
 
       - name: Install dependencies
-        run: pip install fastapi uvicorn pytest httpx
+        run: pip install -r requirements-dev.txt
 
       - name: Run tests
         run: pytest
