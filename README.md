@@ -1,66 +1,88 @@
-# Task Manager
+# Porsche Showroom
 
+[![CI](https://github.com/raulcaian/task-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/raulcaian/task-manager/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
-[![Tested with pytest](https://img.shields.io/badge/backend%20tests-pytest-0A9EDC)](https://docs.pytest.org/)
-[![Tested with Vitest](https://img.shields.io/badge/frontend%20tests-vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
-[![CI](https://github.com/raulcaian/task-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/raulcaian/task-manager/actions/workflows/ci.yml)
 
-A full-stack task management app built to practice connecting a **React** frontend to a **Python (FastAPI)** REST API — with real request/response handling, error states, and automated tests on both sides.
+A full-stack showcase site for Porsche models: a **React** frontend with scroll-driven animations, backed by a **Python (FastAPI)** API and deployed on **AWS**.
 
-## Overview
+> **Status: in progress.** The project was previously a task manager used to validate the stack end to end (API, tests, CI, Docker, AWS). It has been reset to a minimal shell; the showroom sections, the database and the new API endpoints are being built next.
 
-The backend exposes a small REST API for managing tasks (create, list, delete), with automatic request validation. The frontend consumes that API directly — no mock data — and reflects loading and error states the way a production app would.
+*Unofficial portfolio project, not affiliated with Porsche AG.*
 
-## Features
+## Architecture
 
-- List, create, and delete tasks through a REST API
-- Automatic request validation on the backend (Pydantic)
-- Interactive, auto-generated API documentation (Swagger UI, at `/docs`)
-- Loading and error states on the frontend, driven by real API responses
-- Automated test suite for both backend and frontend, run automatically on every push (CI)
+```
+                 https://<distribution>.cloudfront.net
+                                 │
+                         ┌───────▼───────┐
+      Browser  ────────► │  CloudFront   │  HTTPS, caching, routing
+                         └───┬───────┬───┘
+                   /api/*    │       │   everything else
+                             ▼       ▼
+                    ┌────────────┐ ┌────────────┐
+                    │    EC2     │ │     S3     │
+                    │  FastAPI   │ │ React build│
+                    │  (Docker)  │ │  (static)  │
+                    └────────────┘ └────────────┘
+```
+
+- The React app is built into static files and served from **S3**.
+- The FastAPI backend runs in **Docker** on **EC2**.
+- **CloudFront** sits in front of both: API routes go to EC2 with caching disabled, everything else goes to S3 with caching. Because the browser sees a single domain, no CORS is needed in production.
+- Planned: **PostgreSQL on RDS** for the showroom data (models, specs, paints, timeline).
 
 ## Tech stack
 
-| Layer    | Technologies                              |
-|----------|--------------------------------------------|
-| Backend  | Python, FastAPI, Uvicorn, Pydantic          |
-| Frontend | React, Vite, JavaScript (ES6+), CSS         |
-| Testing  | pytest + httpx (backend), Vitest + React Testing Library (frontend) |
+| Layer    | Technologies |
+|----------|--------------|
+| Frontend | React 19, Vite 8, JavaScript, CSS |
+| Backend  | Python 3.14, FastAPI, Uvicorn |
+| Testing  | pytest + httpx (backend), Vitest + React Testing Library (frontend), ESLint |
+| DevOps   | Docker, GitHub Actions, AWS (S3, CloudFront, EC2) |
 
 ## Project structure
 
 ```
-task-manager/
+.
+├── .github/workflows/ci.yml   # CI: tests, lint, build, Docker build
 ├── backend/
-│   ├── main.py         # FastAPI app: routes, model, in-memory store
-│   └── test_main.py    # API tests (pytest)
+│   ├── main.py                # FastAPI app
+│   ├── test_main.py           # API tests (pytest)
+│   ├── requirements.txt       # runtime dependencies
+│   ├── requirements-dev.txt   # + test dependencies
+│   ├── .env.example           # environment variables template
+│   └── Dockerfile
 └── frontend/
+    ├── index.html
     └── src/
-        ├── App.jsx      # Main component: fetch, state, UI
-        ├── App.css      # Styling
-        └── App.test.jsx # Component tests (Vitest)
+        ├── main.jsx           # React entry point
+        ├── App.jsx            # root component
+        ├── App.css
+        └── App.test.jsx       # component tests (Vitest)
 ```
 
 ## Getting started
 
-### 1. Backend (API)
+Requirements: Python 3.14, Node.js 22.
+
+### Backend
 
 ```bash
 cd backend
 python3 -m venv venv
 source venv/bin/activate
-pip install fastapi uvicorn
+pip install -r requirements-dev.txt
 uvicorn main:app --reload
 ```
 
-The API runs at `http://127.0.0.1:8000`. Interactive docs are available at `http://127.0.0.1:8000/docs`.
+The API runs at `http://127.0.0.1:8000`. Try `http://127.0.0.1:8000/api/health`, or the interactive docs at `/docs`.
 
-### 2. Frontend (React)
+### Frontend
 
-In a separate terminal:
+In a second terminal:
 
 ```bash
 cd frontend
@@ -70,54 +92,38 @@ npm run dev
 
 The app runs at `http://localhost:5173`.
 
-> Both servers need to be running at the same time for the app to work end to end.
+### Environment variables
 
-## API reference
+| Variable | Where | Default | Purpose |
+|----------|-------|---------|---------|
+| `ALLOWED_ORIGINS` | backend | `http://localhost:5173` | Comma-separated browser origins allowed to call the API (CORS). Not needed in production, where CloudFront serves everything from one domain. |
 
-| Method | Endpoint            | Description                |
-|--------|----------------------|------------------------------|
-| GET    | `/tasks`              | List all tasks              |
-| POST   | `/tasks`               | Create a new task           |
-| DELETE | `/tasks/{task_id}`    | Delete a task by id          |
+See `backend/.env.example`.
 
-**Task model**
+## API
 
-```json
-{
-  "id": 1,
-  "title": "Buy milk",
-  "status": "pending"
-}
-```
+| Method | Endpoint      | Description  |
+|--------|---------------|--------------|
+| GET    | `/api/health` | Health check, returns `{"status": "ok"}` |
 
-`status` defaults to `"pending"` if not provided.
-
-## Testing
-
-**Backend** (pytest) — exercises every endpoint through FastAPI's `TestClient`, with no manual steps:
+## Tests and checks
 
 ```bash
-cd backend
-source venv/bin/activate
-pip install pytest httpx
-pytest
-```
+# backend
+cd backend && pytest
 
-**Frontend** (Vitest + React Testing Library) — renders the component, mocks `fetch`, and simulates real user interaction (typing, clicking):
-
-```bash
+# frontend
 cd frontend
-npm install
+npm run lint
 npm test
+npm run build
 ```
 
-## Possible next steps
+Every push to `main` and every pull request runs the same checks in GitHub Actions, plus a Docker build of the backend.
 
-- Persistent storage (SQLite / PostgreSQL) instead of an in-memory list
-- User authentication
-- Editing an existing task (PUT/PATCH)
-- Containerization with Docker
+## Roadmap
 
-## License
-
-This project was built for learning and portfolio purposes.
+- [ ] PostgreSQL schema (models, specs, paints, timeline) with SQLAlchemy and Alembic migrations
+- [ ] `GET /api/models` and `GET /api/eras`
+- [ ] Showroom sections: smoke intro, build-on-scroll, garage with configurator, timeline
+- [ ] Continuous deployment to S3 / EC2 with CloudFront invalidation
