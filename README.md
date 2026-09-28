@@ -32,7 +32,7 @@ A full-stack showcase site for Porsche models: a **React** frontend with scroll-
 - The React app is built into static files and served from **S3**.
 - The FastAPI backend runs in **Docker** on **EC2**.
 - **CloudFront** sits in front of both: API routes go to EC2 with caching disabled, everything else goes to S3 with caching. Because the browser sees a single domain, no CORS is needed in production.
-- The data lives in **PostgreSQL** (locally in Docker; planned on **RDS**).
+- The data lives in **PostgreSQL** (locally in Docker, in production on **RDS**, reachable only from the EC2 server).
 
 ## Tech stack
 
@@ -145,9 +145,17 @@ npm run build
 
 Backend tests run against a separate `showroom_test` database that is created, migrated and seeded automatically. Every push to `main` and every pull request runs the same checks in GitHub Actions (with a PostgreSQL service container), plus a Docker build of the backend.
 
+## Deployment
+
+Every merge into `main` that passes all checks is deployed automatically by the `deploy-backend` and `deploy-frontend` jobs in `.github/workflows/ci.yml`:
+
+1. GitHub Actions gets **short-lived AWS credentials through OIDC**; the IAM role only trusts this repository's `main` branch and only allows what the deploy needs.
+2. **Backend:** the Docker image is built, tagged with the commit SHA and pushed to **ECR**. The workflow then sends `deploy/remote-deploy.sh` to the EC2 server through **SSM Run Command** (no SSH, no open ports). On the server the script reads `DATABASE_URL` from **SSM Parameter Store** (SecureString), runs the Alembic migrations and the seed against **RDS PostgreSQL**, restarts the container with `--restart unless-stopped` and waits for `/api/health`.
+3. **Frontend:** `npm run build` output is synced to **S3** (hashed assets cached for a year, `index.html` always revalidated) and the **CloudFront** cache is invalidated.
+
 ## Roadmap
 
 - [x] PostgreSQL schema (models, specs, paints, timeline) with SQLAlchemy and Alembic migrations
 - [x] `GET /api/models`, `/api/paints` and `/api/eras`
 - [ ] Showroom sections: smoke intro, build-on-scroll, garage with configurator, timeline
-- [ ] Continuous deployment to S3 / EC2 with CloudFront invalidation
+- [x] Continuous deployment to S3 / EC2 with CloudFront invalidation
