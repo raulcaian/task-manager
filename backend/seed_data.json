@@ -1,0 +1,205 @@
+{
+  "models": [
+    {
+      "slug": "911-carrera",
+      "name": "911 Carrera",
+      "tagline": "Coupé · rear engine",
+      "image_url": "/media/cars/911-carrera.png",
+      "base_hue": 220,
+      "specs": [
+        [
+          "Body",
+          "2+2 coupé"
+        ],
+        [
+          "Engine",
+          "Rear"
+        ],
+        [
+          "Drive",
+          "Rear-wheel"
+        ],
+        [
+          "Seats",
+          "4"
+        ]
+      ]
+    },
+    {
+      "slug": "718-boxster",
+      "name": "718 Boxster",
+      "tagline": "Roadster · mid-engine",
+      "image_url": "/media/cars/718-boxster.png",
+      "base_hue": null,
+      "specs": [
+        [
+          "Body",
+          "Roadster"
+        ],
+        [
+          "Engine",
+          "Mid"
+        ],
+        [
+          "Drive",
+          "Rear-wheel"
+        ],
+        [
+          "Seats",
+          "2"
+        ]
+      ]
+    },
+    {
+      "slug": "taycan",
+      "name": "Taycan",
+      "tagline": "Sports sedan · fully electric",
+      "image_url": "/media/cars/taycan.png",
+      "base_hue": 160,
+      "specs": [
+        [
+          "Body",
+          "4-door sedan"
+        ],
+        [
+          "Powertrain",
+          "Electric"
+        ],
+        [
+          "Drive",
+          "Rear / all-wheel"
+        ],
+        [
+          "Seats",
+          "4–5"
+        ]
+      ]
+    },
+    {
+      "slug": "cayenne",
+      "name": "Cayenne",
+      "tagline": "SUV · all-wheel drive",
+      "image_url": "/media/cars/cayenne.png",
+      "base_hue": 205,
+      "specs": [
+        [
+          "Body",
+          "5-door SUV"
+        ],
+        [
+          "Engine",
+          "Front"
+        ],
+        [
+          "Drive",
+          "All-wheel"
+        ],
+        [
+          "Seats",
+          "5"
+        ]
+      ]
+    }
+  ],
+  "paints": [
+    {
+      "name": "Red",
+      "swatch_hex": "#b3121b",
+      "hue": 355
+    },
+    {
+      "name": "Blue",
+      "swatch_hex": "#1f4fa3",
+      "hue": 222
+    },
+    {
+      "name": "Green",
+      "swatch_hex": "#2f5d3a",
+      "hue": 140
+    },
+    {
+      "name": "Silver",
+      "swatch_hex": "#a9adb3",
+      "hue": null
+    },
+    {
+      "name": "Black",
+      "swatch_hex": "#1a1b1d",
+      "hue": null
+    }
+  ],
+  "eras": [
+    {
+      "year_label": "1931",
+      "title": "It all starts with a design office",
+      "description": "Ferdinand Porsche opens a design and engineering consultancy in Stuttgart. This is where the roots of Porsche Engineering lie.",
+      "photo_url": "/media/eras/1931.jpg",
+      "photo_caption": "",
+      "bg_color": "#1b1712",
+      "accent_color": "#c8a96a"
+    },
+    {
+      "year_label": "1948",
+      "title": "The first Porsche",
+      "description": "The 356 “No. 1” Roadster, the first car to bear the Porsche name, is homologated in Gmünd, Austria.",
+      "photo_url": "/media/eras/1948.jpg",
+      "photo_caption": "356 “No. 1” Roadster",
+      "bg_color": "#221b12",
+      "accent_color": "#d9b77a"
+    },
+    {
+      "year_label": "1963",
+      "title": "A legend is born",
+      "description": "The 901 is unveiled at the IAA in Frankfurt. It is later renamed the 911.",
+      "photo_url": "/media/eras/1963.jpg",
+      "photo_caption": "911 (pictured: 993 generation)",
+      "bg_color": "#121820",
+      "accent_color": "#9fb6c8"
+    },
+    {
+      "year_label": "1970",
+      "title": "Victory at Le Mans",
+      "description": "Porsche takes its first overall win at the 24 Hours of Le Mans, with the 917.",
+      "photo_url": "/media/eras/1970.jpg",
+      "photo_caption": "917 · Le Mans 1970",
+      "bg_color": "#1d1008",
+      "accent_color": "#ff8a2a"
+    },
+    {
+      "year_label": "1996",
+      "title": "A mid-engine car for everyone",
+      "description": "The Boxster brings a mid-engine roadster into the production line-up.",
+      "photo_url": "/media/eras/1996.jpg",
+      "photo_caption": "Boxster (986)",
+      "bg_color": "#101318",
+      "accent_color": "#b8bcc3"
+    },
+    {
+      "year_label": "2002",
+      "title": "A new segment",
+      "description": "The Cayenne is Porsche's first SUV and opens a new segment for the brand.",
+      "photo_url": "/media/cars/cayenne.png",
+      "photo_caption": "Pictured: current generation",
+      "bg_color": "#0d1410",
+      "accent_color": "#7fb58a"
+    },
+    {
+      "year_label": "2019",
+      "title": "Fully electric",
+      "description": "The Taycan becomes Porsche's first fully electric production car.",
+      "photo_url": "/media/eras/2019.jpg",
+      "photo_caption": "Taycan Turbo S · IAA 2019",
+      "bg_color": "#05131c",
+      "accent_color": "#58c7ff"
+    },
+    {
+      "year_label": "Today",
+      "title": "The software-defined car",
+      "description": "Connectivity, driver assistance, data and cloud: the next chapter is being written here, and this is where Porsche Engineering comes in.",
+      "photo_url": "/media/eras/today.jpg",
+      "photo_caption": "Macan Electric",
+      "bg_color": "#0a0a0b",
+      "accent_color": "#ff4d5e"
+    }
+  ]
+}
