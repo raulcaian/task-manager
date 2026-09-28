@@ -8,7 +8,7 @@
 
 A full-stack showcase site for Porsche models: a **React** frontend with scroll-driven animations, backed by a **Python (FastAPI)** API and deployed on **AWS**.
 
-> **Status: in progress.** The project was previously a task manager used to validate the stack end to end (API, tests, CI, Docker, AWS). It has been reset to a minimal shell; the showroom sections, the database and the new API endpoints are being built next.
+> **Status: in progress.** The backend serves the showroom data (models, paints, timeline) from PostgreSQL. The frontend is still a minimal shell; the showroom sections are being built next.
 
 *Unofficial portfolio project, not affiliated with Porsche AG.*
 
@@ -32,14 +32,15 @@ A full-stack showcase site for Porsche models: a **React** frontend with scroll-
 - The React app is built into static files and served from **S3**.
 - The FastAPI backend runs in **Docker** on **EC2**.
 - **CloudFront** sits in front of both: API routes go to EC2 with caching disabled, everything else goes to S3 with caching. Because the browser sees a single domain, no CORS is needed in production.
-- Planned: **PostgreSQL on RDS** for the showroom data (models, specs, paints, timeline).
+- The data lives in **PostgreSQL** (locally in Docker; planned on **RDS**).
 
 ## Tech stack
 
 | Layer    | Technologies |
 |----------|--------------|
 | Frontend | React 19, Vite 8, JavaScript, CSS |
-| Backend  | Python 3.14, FastAPI, Uvicorn |
+| Backend  | Python 3.14, FastAPI, Uvicorn, SQLAlchemy, Alembic |
+| Database | PostgreSQL 17 |
 | Testing  | pytest + httpx (backend), Vitest + React Testing Library (frontend), ESLint |
 | DevOps   | Docker, GitHub Actions, AWS (S3, CloudFront, EC2) |
 
@@ -48,9 +49,18 @@ A full-stack showcase site for Porsche models: a **React** frontend with scroll-
 ```
 .
 ├── .github/workflows/ci.yml   # CI: tests, lint, build, Docker build
+├── docker-compose.yml         # local PostgreSQL
 ├── backend/
-│   ├── main.py                # FastAPI app
-│   ├── test_main.py           # API tests (pytest)
+│   ├── main.py                # FastAPI app and routes
+│   ├── db.py                  # database connection and session
+│   ├── models.py              # tables (SQLAlchemy)
+│   ├── schemas.py             # API response shapes (Pydantic)
+│   ├── migrations/            # Alembic migrations
+│   ├── seed.py                # loads seed_data.json into the database
+│   ├── seed_data.json         # models, paints and timeline content
+│   ├── conftest.py            # test database setup
+│   ├── test_main.py           # health and CORS tests
+│   ├── test_api.py            # endpoint tests
 │   ├── requirements.txt       # runtime dependencies
 │   ├── requirements-dev.txt   # + test dependencies
 │   ├── .env.example           # environment variables template
@@ -66,7 +76,13 @@ A full-stack showcase site for Porsche models: a **React** frontend with scroll-
 
 ## Getting started
 
-Requirements: Python 3.14, Node.js 22.
+Requirements: Python 3.14, Node.js 22, Docker Desktop.
+
+### Database
+
+```bash
+docker compose up -d        # PostgreSQL on localhost:5432
+```
 
 ### Backend
 
@@ -75,6 +91,8 @@ cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements-dev.txt
+alembic upgrade head        # create the tables
+python seed.py              # load the showroom data
 uvicorn main:app --reload
 ```
 
@@ -96,20 +114,26 @@ The app runs at `http://localhost:5173`.
 
 | Variable | Where | Default | Purpose |
 |----------|-------|---------|---------|
+| `DATABASE_URL` | backend | local Docker database | PostgreSQL connection string (SQLAlchemy format). |
 | `ALLOWED_ORIGINS` | backend | `http://localhost:5173` | Comma-separated browser origins allowed to call the API (CORS). Not needed in production, where CloudFront serves everything from one domain. |
+| `TEST_DATABASE_URL` | tests | local `showroom_test` database | Database the tests create, migrate and seed. |
 
 See `backend/.env.example`.
 
 ## API
 
-| Method | Endpoint      | Description  |
-|--------|---------------|--------------|
-| GET    | `/api/health` | Health check, returns `{"status": "ok"}` |
+| Method | Endpoint              | Description |
+|--------|-----------------------|-------------|
+| GET    | `/api/health`         | Health check, returns `{"status": "ok"}` |
+| GET    | `/api/models`         | All models with their specs, in display order |
+| GET    | `/api/models/{slug}`  | One model, or 404 |
+| GET    | `/api/paints`         | Paint colours for the configurator |
+| GET    | `/api/eras`           | Timeline entries, from 1931 to today |
 
 ## Tests and checks
 
 ```bash
-# backend
+# backend (needs the Docker database running)
 cd backend && pytest
 
 # frontend
@@ -119,11 +143,11 @@ npm test
 npm run build
 ```
 
-Every push to `main` and every pull request runs the same checks in GitHub Actions, plus a Docker build of the backend.
+Backend tests run against a separate `showroom_test` database that is created, migrated and seeded automatically. Every push to `main` and every pull request runs the same checks in GitHub Actions (with a PostgreSQL service container), plus a Docker build of the backend.
 
 ## Roadmap
 
-- [ ] PostgreSQL schema (models, specs, paints, timeline) with SQLAlchemy and Alembic migrations
-- [ ] `GET /api/models` and `GET /api/eras`
+- [x] PostgreSQL schema (models, specs, paints, timeline) with SQLAlchemy and Alembic migrations
+- [x] `GET /api/models`, `/api/paints` and `/api/eras`
 - [ ] Showroom sections: smoke intro, build-on-scroll, garage with configurator, timeline
 - [ ] Continuous deployment to S3 / EC2 with CloudFront invalidation
