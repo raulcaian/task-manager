@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, selectinload
 from db import get_session
 from models import CarModel, Era, Paint
 from schemas import CarModelOut, EraOut, PaintOut
+from trips import router as trips_router
 
 app = FastAPI()
 
@@ -27,6 +28,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(trips_router)
 
 
 @app.get("/api/health")

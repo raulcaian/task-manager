@@ -54,13 +54,20 @@ A full-stack showcase site for Porsche models: a **React** frontend with scroll-
 │   ├── main.py                # FastAPI app and routes
 │   ├── db.py                  # database connection and session
 │   ├── models.py              # tables (SQLAlchemy)
-│   ├── schemas.py             # API response shapes (Pydantic)
+│   ├── schemas.py             # API request/response shapes (Pydantic)
+│   ├── trips.py               # trip planner routes
+│   ├── trip_planner.py        # route + weather + physics -> saved trip
+│   ├── ev_physics.py          # energy and charging model (pure functions)
+│   ├── external.py            # OpenRouteService and Open-Meteo clients
+│   ├── rate_limit.py          # per-visitor limit on trip planning
 │   ├── migrations/            # Alembic migrations
 │   ├── seed.py                # loads seed_data.json into the database
 │   ├── seed_data.json         # models, paints and timeline content
 │   ├── conftest.py            # test database setup
 │   ├── test_main.py           # health and CORS tests
-│   ├── test_api.py            # endpoint tests
+│   ├── test_api.py            # showroom endpoint tests
+│   ├── test_ev_physics.py     # physics and charging tests
+│   ├── test_trips_api.py      # trip planner tests (external APIs faked)
 │   ├── requirements.txt       # runtime dependencies
 │   ├── requirements-dev.txt   # + test dependencies
 │   ├── .env.example           # environment variables template
@@ -116,6 +123,7 @@ The app runs at `http://localhost:5173`.
 |----------|-------|---------|---------|
 | `DATABASE_URL` | backend | local Docker database | PostgreSQL connection string (SQLAlchemy format). |
 | `ALLOWED_ORIGINS` | backend | `http://localhost:5173` | Comma-separated browser origins allowed to call the API (CORS). Not needed in production, where CloudFront serves everything from one domain. |
+| `ORS_API_KEY` | backend | empty | OpenRouteService key for place search and routes. Without it the trip planner answers 503. |
 | `TEST_DATABASE_URL` | tests | local `showroom_test` database | Database the tests create, migrate and seed. |
 
 See `backend/.env.example`.
@@ -129,6 +137,22 @@ See `backend/.env.example`.
 | GET    | `/api/models/{slug}`  | One model, or 404 |
 | GET    | `/api/paints`         | Paint colours for the configurator |
 | GET    | `/api/eras`           | Timeline entries, from 1931 to today |
+| GET    | `/api/ev-models`      | Electric models available in the trip planner |
+| GET    | `/api/geocode?q=Cluj` | Place suggestions for the trip planner search box |
+| POST   | `/api/trips`          | Plan an EV trip (route, consumption, charging stops) and save it |
+| GET    | `/api/trips`          | Latest saved trips |
+| GET    | `/api/trips/{id}`     | One saved trip with its stops and route |
+
+### EV trip planner
+
+`POST /api/trips` takes an origin, a destination (picked through `/api/geocode`), an EV model, the battery level at departure and a cruise speed, then:
+
+1. gets the real road route with elevation from **OpenRouteService** and the current temperature from **Open-Meteo** (unless one is given);
+2. splits the route into small segments and estimates the energy for each one from physics: aerodynamic drag (grows with speed²), rolling resistance, climbing and regenerative braking, cabin heating/cooling and a cold-battery penalty (`backend/ev_physics.py`);
+3. drives the route virtually, and before the battery would fall under a 10% reserve inserts a charging stop that follows the car's charging curve: up to 80% while more stops are needed, only what the rest of the trip needs at the last one;
+4. saves the trip and its stops in PostgreSQL so they can be listed and reopened.
+
+All figures are engineering estimates, not official Porsche data. Planning is rate limited per visitor to protect the free routing quota; the OpenRouteService key lives in SSM Parameter Store (`/showroom/ors-api-key`), never in the browser.
 
 ## Tests and checks
 
@@ -157,5 +181,7 @@ Every merge into `main` that passes all checks is deployed automatically by the 
 
 - [x] PostgreSQL schema (models, specs, paints, timeline) with SQLAlchemy and Alembic migrations
 - [x] `GET /api/models`, `/api/paints` and `/api/eras`
+- [x] EV trip planner API
+- [ ] Trip planner page (form, map, saved trips)
 - [ ] Showroom sections: smoke intro, build-on-scroll, garage with configurator, timeline
 - [x] Continuous deployment to S3 / EC2 with CloudFront invalidation

@@ -16,12 +16,16 @@ if ! command -v aws >/dev/null 2>&1; then
   snap install aws-cli --classic
 fi
 
-echo "==> Reading DATABASE_URL from Parameter Store"
+echo "==> Reading secrets from Parameter Store"
 install -d -m 700 "$ENV_DIR"
 DATABASE_URL="$(aws ssm get-parameter --region "$REGION" \
   --name /showroom/database-url --with-decryption \
   --query Parameter.Value --output text)"
-( umask 077; printf 'DATABASE_URL=%s\n' "$DATABASE_URL" > "$ENV_FILE" )
+# Optional: the trip planner's routing key. Missing key = planner returns 503.
+ORS_API_KEY="$(aws ssm get-parameter --region "$REGION" \
+  --name /showroom/ors-api-key --with-decryption \
+  --query Parameter.Value --output text 2>/dev/null || true)"
+( umask 077; printf 'DATABASE_URL=%s\nORS_API_KEY=%s\n' "$DATABASE_URL" "$ORS_API_KEY" > "$ENV_FILE" )
 
 echo "==> Pulling $IMAGE"
 aws ecr get-login-password --region "$REGION" \
