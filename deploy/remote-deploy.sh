@@ -25,7 +25,18 @@ DATABASE_URL="$(aws ssm get-parameter --region "$REGION" \
 ORS_API_KEY="$(aws ssm get-parameter --region "$REGION" \
   --name /showroom/ors-api-key --with-decryption \
   --query Parameter.Value --output text 2>/dev/null || true)"
-( umask 077; printf 'DATABASE_URL=%s\nORS_API_KEY=%s\n' "$DATABASE_URL" "$ORS_API_KEY" > "$ENV_FILE" )
+# Optional helper: read a parameter, or print nothing if it does not exist.
+optional_param() {
+  aws ssm get-parameter --region "$REGION" --name "$1" --with-decryption \
+    --query Parameter.Value --output text 2>/dev/null || true
+}
+# Optional: contact form (captcha secret and SES addresses). Missing = the
+# captcha check is skipped and messages are only stored in the database.
+TURNSTILE_SECRET_KEY="$(optional_param /showroom/turnstile-secret-key)"
+CONTACT_FROM_EMAIL="$(optional_param /showroom/contact-from-email)"
+CONTACT_TO_EMAIL="$(optional_param /showroom/contact-to-email)"
+( umask 077; printf 'DATABASE_URL=%s\nORS_API_KEY=%s\nTURNSTILE_SECRET_KEY=%s\nCONTACT_FROM_EMAIL=%s\nCONTACT_TO_EMAIL=%s\nAWS_REGION=%s\n' \
+  "$DATABASE_URL" "$ORS_API_KEY" "$TURNSTILE_SECRET_KEY" "$CONTACT_FROM_EMAIL" "$CONTACT_TO_EMAIL" "$REGION" > "$ENV_FILE" )
 
 echo "==> Pulling $IMAGE"
 aws ecr get-login-password --region "$REGION" \

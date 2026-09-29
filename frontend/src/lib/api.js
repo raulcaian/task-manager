@@ -62,4 +62,9 @@ export const api = {
   trip: (id, options) => request(`/trips/${id}`, options),
   planTrip: (payload, options) =>
     request('/trips', { ...options, method: 'POST', body: payload }),
+  options: (options) => request('/options', options),
+  quote: (payload, options) =>
+    request('/quote', { ...options, method: 'POST', body: payload }),
+  contact: (payload, options) =>
+    request('/contact', { ...options, method: 'POST', body: payload }),
 };

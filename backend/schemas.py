@@ -19,6 +19,7 @@ class CarModelOut(BaseModel):
     tagline: str
     image_url: str
     base_hue: int | None
+    base_price_eur: int
     specs: list[SpecOut]
 
 
@@ -29,6 +30,7 @@ class PaintOut(BaseModel):
     name: str
     swatch_hex: str
     hue: int | None
+    price_eur: int
 
 
 class EraOut(BaseModel):
@@ -115,3 +117,56 @@ class TripOut(TripSummaryOut):
     driving_minutes: float
     route: list[list[float]]
     stops: list[ChargingStopOut]
+
+
+# --- Configurator -----------------------------------------------------------
+
+
+class ConfigOptionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    code: str
+    category: str
+    name: str
+    description: str
+    price_eur: int
+    available_for: list[str] | None
+    requires: list[str]
+    excludes: list[str]
+
+
+class QuoteRequest(BaseModel):
+    model: str = Field(description="Model slug, e.g. '911-carrera'")
+    paint_id: int
+    options: list[str] = Field(default_factory=list, max_length=30)
+
+
+class LineItemOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    kind: str
+    code: str
+    name: str
+    price_eur: int
+
+
+class QuoteOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    items: list[LineItemOut]
+    total_eur: int
+    vat_included_eur: int
+
+
+# --- Contact form -----------------------------------------------------------
+
+
+class ContactCreate(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    # A light check on purpose: the real proof is that a reply arrives.
+    email: str = Field(max_length=254, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    message: str = Field(min_length=10, max_length=2000)
+    # Honeypot: hidden from people, bots tend to fill it in.
+    website: str = Field(default="", max_length=200)
+    turnstile_token: str | None = Field(default=None, max_length=2048)
+

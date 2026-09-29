@@ -4,7 +4,7 @@ from pathlib import Path
 from sqlalchemy import delete, select
 
 from db import SessionLocal
-from models import CarModel, Era, EvModel, ModelSpec, Paint
+from models import CarModel, ConfigOption, Era, EvModel, ModelSpec, Paint
 
 DATA_FILE = Path(__file__).parent / "seed_data.json"
 
@@ -18,6 +18,7 @@ def seed() -> None:
         session.execute(delete(CarModel))
         session.execute(delete(Paint))
         session.execute(delete(Era))
+        session.execute(delete(ConfigOption))
 
         for order, item in enumerate(data["models"]):
             model = CarModel(
@@ -26,6 +27,7 @@ def seed() -> None:
                 tagline=item["tagline"],
                 image_url=item["image_url"],
                 base_hue=item["base_hue"],
+                base_price_eur=item["base_price_eur"],
                 sort_order=order,
             )
             for spec_order, (label, value) in enumerate(item["specs"]):
@@ -39,6 +41,9 @@ def seed() -> None:
 
         for order, item in enumerate(data["eras"]):
             session.add(Era(sort_order=order, **item))
+
+        for order, item in enumerate(data["config_options"]):
+            session.add(ConfigOption(sort_order=order, **item))
 
         # EV models are referenced by saved trips, so they are updated in
         # place (matched by slug) instead of being deleted and re-created.
@@ -58,6 +63,7 @@ def seed() -> None:
     print(
         f"Seeded {len(data['models'])} models, "
         f"{len(data['paints'])} paints, {len(data['eras'])} eras, "
+        f"{len(data['config_options'])} options, "
         f"{len(data['ev_models'])} EV models."
     )
 

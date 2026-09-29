@@ -11,6 +11,12 @@ from collections import defaultdict, deque
 from fastapi import HTTPException, Request
 
 
+def client_address(request: Request) -> str:
+    """The visitor's IP: behind CloudFront it is the first X-Forwarded-For entry."""
+    forwarded = request.headers.get("x-forwarded-for", "")
+    return forwarded.split(",")[0].strip() or (request.client.host if request.client else "unknown")
+
+
 class RateLimiter:
     def __init__(self, max_calls: int, period_s: float):
         self.max_calls = max_calls
@@ -21,8 +27,7 @@ class RateLimiter:
         self.calls.clear()
 
     def __call__(self, request: Request) -> None:
-        forwarded = request.headers.get("x-forwarded-for", "")
-        client = forwarded.split(",")[0].strip() or (request.client.host if request.client else "unknown")
+        client = client_address(request)
         now = time.monotonic()
         calls = self.calls[client]
         while calls and now - calls[0] > self.period_s:

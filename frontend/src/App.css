@@ -8,3 +8,8 @@ main:focus {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
+
+.site-footer__inner {
+  display: grid;
+  gap: var(--space-2);
+}
