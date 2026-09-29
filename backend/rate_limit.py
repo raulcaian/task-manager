@@ -1,7 +1,7 @@
 """A tiny in-memory rate limiter, enough for a single API container.
 
-It protects the free OpenRouteService quota from being used up by one
-visitor. Behind CloudFront the real client address is the first entry of
+It keeps one visitor from using up the free routing and search services
+or flooding the contact form. Behind CloudFront the real client address is the first entry of
 X-Forwarded-For.
 """
 
