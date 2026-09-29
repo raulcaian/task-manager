@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, Float, ForeignKey, String, Text, func
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db import Base
@@ -15,6 +15,8 @@ class CarModel(Base):
     tagline: Mapped[str] = mapped_column(String(200))
     image_url: Mapped[str] = mapped_column(String(300))
     base_hue: Mapped[int | None]
+    # Illustrative list price in euros, VAT included.
+    base_price_eur: Mapped[int] = mapped_column(default=0)
     sort_order: Mapped[int] = mapped_column(default=0)
 
     specs: Mapped[list["ModelSpec"]] = relationship(
@@ -45,6 +47,26 @@ class Paint(Base):
     name: Mapped[str] = mapped_column(String(50))
     swatch_hex: Mapped[str] = mapped_column(String(7))
     hue: Mapped[int | None]
+    price_eur: Mapped[int] = mapped_column(default=0)
+    sort_order: Mapped[int] = mapped_column(default=0)
+
+
+class ConfigOption(Base):
+    """An extra for the configurator, with the rules that limit it."""
+
+    __tablename__ = "config_options"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    code: Mapped[str] = mapped_column(String(50), unique=True)
+    category: Mapped[str] = mapped_column(String(30))
+    name: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(String(300), default="")
+    price_eur: Mapped[int] = mapped_column(default=0)
+    # Model slugs the option can be ordered for; None = every model.
+    available_for: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # Option codes that must / must not be selected together with this one.
+    requires: Mapped[list] = mapped_column(JSON, default=list)
+    excludes: Mapped[list] = mapped_column(JSON, default=list)
     sort_order: Mapped[int] = mapped_column(default=0)
 
 
@@ -60,7 +82,6 @@ class Era(Base):
     bg_color: Mapped[str] = mapped_column(String(7))
     accent_color: Mapped[str] = mapped_column(String(7))
     sort_order: Mapped[int] = mapped_column(default=0)
-    
 
 
 class EvModel(Base):
@@ -141,3 +162,18 @@ class TripChargingStop(Base):
     charge_minutes: Mapped[float] = mapped_column(Float)
 
     trip: Mapped["Trip"] = relationship(back_populates="stops")
+
+
+class ContactMessage(Base):
+    """A message sent through the contact form."""
+
+    __tablename__ = "contact_messages"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    name: Mapped[str] = mapped_column(String(100))
+    email: Mapped[str] = mapped_column(String(254))
+    message: Mapped[str] = mapped_column(Text)
+    email_sent: Mapped[bool] = mapped_column(Boolean, default=False)

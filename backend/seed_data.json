@@ -23,7 +23,8 @@
           "Seats",
           "4"
         ]
-      ]
+      ],
+      "base_price_eur": 125900
     },
     {
       "slug": "718-boxster",
@@ -48,7 +49,8 @@
           "Seats",
           "2"
         ]
-      ]
+      ],
+      "base_price_eur": 72400
     },
     {
       "slug": "taycan",
@@ -73,7 +75,8 @@
           "Seats",
           "4–5"
         ]
-      ]
+      ],
+      "base_price_eur": 101500
     },
     {
       "slug": "cayenne",
@@ -98,34 +101,40 @@
           "Seats",
           "5"
         ]
-      ]
+      ],
+      "base_price_eur": 105200
     }
   ],
   "paints": [
     {
       "name": "Red",
       "swatch_hex": "#b3121b",
-      "hue": 355
+      "hue": 355,
+      "price_eur": 0
     },
     {
       "name": "Blue",
       "swatch_hex": "#1f4fa3",
-      "hue": 222
+      "hue": 222,
+      "price_eur": 1850
     },
     {
       "name": "Green",
       "swatch_hex": "#2f5d3a",
-      "hue": 140
+      "hue": 140,
+      "price_eur": 1850
     },
     {
       "name": "Silver",
       "swatch_hex": "#a9adb3",
-      "hue": null
+      "hue": null,
+      "price_eur": 1850
     },
     {
       "name": "Black",
       "swatch_hex": "#1a1b1d",
-      "hue": null
+      "hue": null,
+      "price_eur": 0
     }
   ],
   "eras": [
@@ -343,6 +352,153 @@
           15
         ]
       ]
+    }
+  ],
+  "config_options": [
+    {
+      "code": "wheels-standard",
+      "category": "wheels",
+      "name": "Standard wheels",
+      "description": "The wheels the model comes with.",
+      "price_eur": 0,
+      "available_for": null,
+      "requires": [],
+      "excludes": []
+    },
+    {
+      "code": "wheels-sport",
+      "category": "wheels",
+      "name": "21-inch sport wheels",
+      "description": "Larger wheels with more room for bigger brakes.",
+      "price_eur": 2450,
+      "available_for": null,
+      "requires": [],
+      "excludes": []
+    },
+    {
+      "code": "wheels-aero",
+      "category": "wheels",
+      "name": "21-inch aero wheels",
+      "description": "Closed design that adds range on electric models.",
+      "price_eur": 2890,
+      "available_for": [
+        "taycan",
+        "cayenne"
+      ],
+      "requires": [],
+      "excludes": []
+    },
+    {
+      "code": "ceramic-brakes",
+      "category": "performance",
+      "name": "Ceramic composite brakes",
+      "description": "Lighter, fade-resistant brakes. Need the 21-inch sport wheels to fit.",
+      "price_eur": 9780,
+      "available_for": null,
+      "requires": [
+        "wheels-sport"
+      ],
+      "excludes": []
+    },
+    {
+      "code": "sport-chrono",
+      "category": "performance",
+      "name": "Sport Chrono package",
+      "description": "Drive mode switch, launch control and a stopwatch on the dashboard.",
+      "price_eur": 2750,
+      "available_for": null,
+      "requires": [],
+      "excludes": []
+    },
+    {
+      "code": "sport-exhaust",
+      "category": "performance",
+      "name": "Sport exhaust",
+      "description": "A louder, switchable exhaust. Combustion models only.",
+      "price_eur": 3210,
+      "available_for": [
+        "911-carrera",
+        "718-boxster"
+      ],
+      "requires": [
+        "sport-chrono"
+      ],
+      "excludes": []
+    },
+    {
+      "code": "performance-battery",
+      "category": "performance",
+      "name": "Performance Battery Plus",
+      "description": "A larger battery for more range and power.",
+      "price_eur": 6720,
+      "available_for": [
+        "taycan"
+      ],
+      "requires": [],
+      "excludes": []
+    },
+    {
+      "code": "rear-axle-steering",
+      "category": "performance",
+      "name": "Rear-axle steering",
+      "description": "Tighter turning in town, more stability at speed.",
+      "price_eur": 2140,
+      "available_for": [
+        "911-carrera",
+        "taycan",
+        "cayenne"
+      ],
+      "requires": [],
+      "excludes": []
+    },
+    {
+      "code": "bucket-seats",
+      "category": "interior",
+      "name": "Full bucket seats",
+      "description": "Lightweight carbon seats for the track.",
+      "price_eur": 5320,
+      "available_for": [
+        "911-carrera",
+        "718-boxster"
+      ],
+      "requires": [],
+      "excludes": [
+        "comfort-seats"
+      ]
+    },
+    {
+      "code": "comfort-seats",
+      "category": "interior",
+      "name": "18-way comfort seats",
+      "description": "Electric seats with memory and more adjustment.",
+      "price_eur": 2930,
+      "available_for": null,
+      "requires": [],
+      "excludes": [
+        "bucket-seats"
+      ]
+    },
+    {
+      "code": "burmester",
+      "category": "interior",
+      "name": "Burmester sound system",
+      "description": "High-end surround sound.",
+      "price_eur": 5010,
+      "available_for": null,
+      "requires": [],
+      "excludes": []
+    },
+    {
+      "code": "tow-hitch",
+      "category": "practical",
+      "name": "Electric tow hitch",
+      "description": "Folds out at the press of a button.",
+      "price_eur": 1290,
+      "available_for": [
+        "cayenne"
+      ],
+      "requires": [],
+      "excludes": []
     }
   ]
 }

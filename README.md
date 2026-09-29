@@ -124,6 +124,9 @@ The app runs at `http://localhost:5173`.
 | `DATABASE_URL` | backend | local Docker database | PostgreSQL connection string (SQLAlchemy format). |
 | `ALLOWED_ORIGINS` | backend | `http://localhost:5173` | Comma-separated browser origins allowed to call the API (CORS). Not needed in production, where CloudFront serves everything from one domain. |
 | `ORS_API_KEY` | backend | empty | OpenRouteService key for place search and routes. Without it the trip planner answers 503. |
+| `TURNSTILE_SECRET_KEY` | backend | empty | Cloudflare Turnstile secret for the contact form. Empty = captcha check skipped. |
+| `CONTACT_FROM_EMAIL`, `CONTACT_TO_EMAIL` | backend | empty | Verified Amazon SES addresses. Empty = messages are only stored. |
+| `VITE_TURNSTILE_SITE_KEY` | frontend (build) | empty | Public Turnstile site key; in CI it comes from the `TURNSTILE_SITE_KEY` repository variable. |
 | `TEST_DATABASE_URL` | tests | local `showroom_test` database | Database the tests create, migrate and seed. |
 
 See `backend/.env.example`.
@@ -142,6 +145,23 @@ See `backend/.env.example`.
 | POST   | `/api/trips`          | Plan an EV trip (route, consumption, charging stops) and save it |
 | GET    | `/api/trips`          | Latest saved trips |
 | GET    | `/api/trips/{id}`     | One saved trip with its stops and route |
+| GET    | `/api/options`        | Configurator options with their rules (models, requires, excludes) |
+| POST   | `/api/quote`          | Validate a configuration and price it, or list every broken rule (422) |
+| POST   | `/api/contact`        | Contact form: captcha check, store in PostgreSQL, email through SES |
+
+### Configurator
+
+Prices and rules are data in PostgreSQL (`config_options`), and `backend/configurator.py` interprets them as pure functions:
+
+- an option can be limited to some models (`available_for`), can **require** other options and can **exclude** others;
+- exactly one wheel choice is required;
+- `POST /api/quote` returns the line items, the total and the VAT it contains, or a 422 that lists every broken rule at once (e.g. *"Ceramic composite brakes requires 21-inch sport wheels."*).
+
+The browser uses the same rules only to be friendly (hiding options a model can't have); the backend is the source of truth. Prices are illustrative.
+
+### Contact form
+
+`POST /api/contact` checks a hidden honeypot field and a **Cloudflare Turnstile** token, stores the message in PostgreSQL and then emails it through **Amazon SES** using the EC2 instance role (no keys). The message is saved before the email is sent, so an email failure never loses it. It is rate limited to 5 messages per hour per visitor.
 
 ### EV trip planner
 
@@ -182,6 +202,14 @@ Every merge into `main` that passes all checks is deployed automatically by the 
 - [x] PostgreSQL schema (models, specs, paints, timeline) with SQLAlchemy and Alembic migrations
 - [x] `GET /api/models`, `/api/paints` and `/api/eras`
 - [x] EV trip planner API
-- [ ] Trip planner page (form, map, saved trips)
-- [ ] Showroom sections: smoke intro, build-on-scroll, garage with configurator, timeline
+- [x] Trip planner page (place search, route drawing, battery chart, saved trips)
+- [x] Showroom sections: video intro, build-on-scroll, garage with configurator, timeline
+- [x] Configurator prices and rules (`/api/options`, `/api/quote`)
+- [x] Contact form with Turnstile and SES
 - [x] Continuous deployment to S3 / EC2 with CloudFront invalidation
+- [ ] Animated logo
+- [ ] Final design polish (colours, spacing, mobile details)
+
+## Media
+
+The car photos were cut out and optimised to WebP for this project; the four build steps (sketch, clay, paint, finish) were generated from the 911 photo with OpenCV. The intro video is AI-generated. All car names and photos belong to their respective owners; this is a non-commercial portfolio project, not affiliated with Porsche AG.

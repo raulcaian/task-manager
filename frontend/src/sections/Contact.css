@@ -1,0 +1,33 @@
+.contact__layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 30rem);
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.contact-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.contact-form .button {
+  justify-self: start;
+}
+
+.contact-form__trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.status--success {
+  color: var(--color-success);
+}
+
+@media (max-width: 860px) {
+  .contact__layout {
+    grid-template-columns: 1fr;
+  }
+}

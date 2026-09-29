@@ -1,24 +1,59 @@
+import { useEffect, useRef, useState } from 'react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import './Hero.css';
 
 const POSTER = '/media/intro/intro-poster.webp';
 
+// Pick the file once, in JavaScript: <source media> is not supported everywhere.
+function pickVideo() {
+  const small = window.matchMedia?.('(max-width: 760px)').matches;
+  return small ? '/media/intro/intro-720.mp4' : '/media/intro/intro-1280.mp4';
+}
+
 export default function Hero() {
   const reducedMotion = usePrefersReducedMotion();
+  const videoRef = useRef(null);
+  const [src] = useState(pickVideo);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    // React sets `muted` only as a property, but Safari and iOS decide about
+    // autoplay from the attribute, so set both before asking to play.
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute('muted', '');
+    if (reducedMotion) {
+      video.pause();
+      return;
+    }
+    const attempt = video.play();
+    // play() is blocked in e.g. Low Power Mode: the poster simply stays visible.
+    attempt?.catch?.(() => setPlaying(false));
+  }, [reducedMotion]);
+
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) video.play()?.catch?.(() => {});
+    else video.pause();
+  };
 
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__media" aria-hidden="true">
-        {reducedMotion ? (
-          <img src={POSTER} alt="" />
-        ) : (
-          <video autoPlay muted loop playsInline preload="auto" poster={POSTER}>
-            {/* The browser picks the first source it can play: small file on phones. */}
-            <source src="/media/intro/intro-720.mp4" type="video/mp4" media="(max-width: 760px)" />
-            <source src="/media/intro/intro-1280.webm" type="video/webm" />
-            <source src="/media/intro/intro-1280.mp4" type="video/mp4" />
-          </video>
-        )}
+        <video
+          ref={videoRef}
+          src={src}
+          poster={POSTER}
+          muted
+          loop
+          playsInline
+          preload="auto"
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+        />
       </div>
 
       <div className="hero__content container">
@@ -36,6 +71,11 @@ export default function Hero() {
           Start the build
         </a>
       </div>
+
+      {/* Moving content longer than 5 s needs a pause control (WCAG 2.2.2). */}
+      <button type="button" className="hero__playback" onClick={togglePlayback}>
+        {playing ? 'Pause video' : 'Play video'}
+      </button>
 
       <a className="hero__scroll" href="#build" aria-label="Scroll to the build section">
         <span aria-hidden="true" />
