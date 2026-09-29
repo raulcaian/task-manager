@@ -1,8 +1,8 @@
 """Clients for the external services used by the trip planner.
 
-OpenRouteService turns place names into coordinates and computes the road
-route with elevation; Open-Meteo gives the current temperature. Both are
-wrapped behind small classes so tests can replace them with fakes.
+Photon turns place names into coordinates, OSRM computes the road route and
+Open-Meteo adds the elevation and the current temperature. They are wrapped
+behind small classes so tests can replace them with fakes.
 """
 
 import logging
@@ -13,12 +13,22 @@ import httpx
 
 log = logging.getLogger(__name__)
 
-# api.openrouteservice.org was retired in August 2026; HeiGIT now serves
-# openrouteservice (routing) and Pelias (place search) under api.heigit.org.
-ORS_DIRECTIONS_URL = "https://api.heigit.org/openrouteservice/v2/directions/driving-car/geojson"
-PELIAS_AUTOCOMPLETE_URL = "https://api.heigit.org/pelias/v1/autocomplete"
+# Free services that need no API key (fair-use limits; the API rate limits
+# visitors so we stay well inside them):
+# - Photon (komoot): place search built on OpenStreetMap
+# - OSRM: road routing on OpenStreetMap
+# - Open-Meteo: elevation along the route and the current temperature
+PHOTON_URL = "https://photon.komoot.io/api/"
+OSRM_ROUTE_URL = "https://router.project-osrm.org/route/v1/driving/{coordinates}"
+OPEN_METEO_ELEVATION_URL = "https://api.open-meteo.com/v1/elevation"
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 TIMEOUT = httpx.Timeout(15.0, connect=5.0)
+# OpenStreetMap services ask every client to identify itself.
+HEADERS = {"User-Agent": "porsche-showroom-portfolio (github.com/raulcaian/task-manager)"}
+# Elevation is sampled every ~1 km (at most this many points) to keep the
+# number of Open-Meteo calls small; 100 points per call is their maximum.
+MAX_ELEVATION_POINTS = 600
+ELEVATION_BATCH = 100
 
 
 class ExternalServiceError(Exception):
@@ -47,25 +57,35 @@ class Place:
 class Route:
     distance_m: float
     duration_s: float
-    # [[lon, lat, elevation_m], ...] as returned by OpenRouteService
+    # [[lon, lat, elevation_m], ...]
     coordinates: list[list[float]]
 
 
+def place_label(properties: dict) -> str:
+    """'Stuttgart, Baden-Württemberg, Germany' from Photon's properties."""
+    parts = [properties.get(key) for key in ("name", "city", "state", "country")]
+    unique = []
+    for part in parts:
+        if part and part not in unique:
+            unique.append(part)
+    return ", ".join(unique)
+
+
+def sample_points(coordinates: list[list[float]], max_points: int) -> list[list[float]]:
+    """Keep at most max_points evenly spaced points, always with both ends."""
+    if len(coordinates) <= max_points:
+        return coordinates
+    step = (len(coordinates) - 1) / (max_points - 1)
+    return [coordinates[round(i * step)] for i in range(max_points)]
+
+
 class RouteService:
-    def __init__(self, api_key: str | None = None):
-        self.api_key = api_key if api_key is not None else os.getenv("ORS_API_KEY", "")
-
-    def _headers(self) -> dict[str, str]:
-        if not self.api_key:
-            raise ExternalServiceError("Route service is not configured")
-        return {"Authorization": self.api_key}
-
     def geocode(self, query: str, limit: int = 5) -> list[Place]:
         try:
             response = httpx.get(
-                PELIAS_AUTOCOMPLETE_URL,
-                params={"text": query, "size": limit},
-                headers=self._headers(),
+                PHOTON_URL,
+                params={"q": query, "limit": limit, "lang": "en"},
+                headers=HEADERS,
                 timeout=TIMEOUT,
             )
             response.raise_for_status()
@@ -75,31 +95,58 @@ class RouteService:
         places = []
         for feature in response.json().get("features", []):
             lon, lat = feature["geometry"]["coordinates"][:2]
-            places.append(Place(label=feature["properties"]["label"], lat=lat, lon=lon))
+            label = place_label(feature.get("properties", {}))
+            if label:
+                places.append(Place(label=label, lat=lat, lon=lon))
         return places
 
     def route(self, origin: Place, destination: Place) -> Route:
+        coordinates = f"{origin.lon},{origin.lat};{destination.lon},{destination.lat}"
         try:
-            response = httpx.post(
-                ORS_DIRECTIONS_URL,
-                json={
-                    "coordinates": [[origin.lon, origin.lat], [destination.lon, destination.lat]],
-                    "elevation": True,
-                },
-                headers=self._headers(),
+            response = httpx.get(
+                OSRM_ROUTE_URL.format(coordinates=coordinates),
+                params={"overview": "full", "geometries": "geojson"},
+                headers=HEADERS,
                 timeout=TIMEOUT,
             )
             response.raise_for_status()
+            data = response.json()
         except httpx.HTTPError as exc:
             raise _failure("Could not compute a road route", exc) from exc
+        if data.get("code") != "Ok" or not data.get("routes"):
+            raise ExternalServiceError("No road route was found between these places")
 
-        feature = response.json()["features"][0]
-        summary = feature["properties"]["summary"]
+        best = data["routes"][0]
+        points = sample_points(best["geometry"]["coordinates"], MAX_ELEVATION_POINTS)
+        elevations = self.elevations(points)
         return Route(
-            distance_m=summary["distance"],
-            duration_s=summary["duration"],
-            coordinates=feature["geometry"]["coordinates"],
+            distance_m=best["distance"],
+            duration_s=best["duration"],
+            coordinates=[[lon, lat, ele] for (lon, lat), ele in zip(points, elevations)],
         )
+
+    def elevations(self, points: list[list[float]]) -> list[float]:
+        """Terrain height (m) for [lon, lat] points; flat (0) if unavailable,
+        so a failing elevation service only makes the estimate less precise."""
+        heights: list[float] = []
+        try:
+            for start in range(0, len(points), ELEVATION_BATCH):
+                batch = points[start:start + ELEVATION_BATCH]
+                response = httpx.get(
+                    OPEN_METEO_ELEVATION_URL,
+                    params={
+                        "latitude": ",".join(f"{lat:.5f}" for _, lat in batch),
+                        "longitude": ",".join(f"{lon:.5f}" for lon, _ in batch),
+                    },
+                    headers=HEADERS,
+                    timeout=TIMEOUT,
+                )
+                response.raise_for_status()
+                heights.extend(float(h) for h in response.json()["elevation"])
+        except (httpx.HTTPError, KeyError, TypeError, ValueError):
+            log.warning("Elevation unavailable, planning the route as flat", exc_info=True)
+            return [0.0] * len(points)
+        return heights
 
 
 class WeatherService:
@@ -109,6 +156,7 @@ class WeatherService:
             response = httpx.get(
                 OPEN_METEO_URL,
                 params={"latitude": lat, "longitude": lon, "current": "temperature_2m"},
+                headers=HEADERS,
                 timeout=TIMEOUT,
             )
             response.raise_for_status()
