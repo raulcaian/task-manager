@@ -4,7 +4,7 @@
       "slug": "911-carrera",
       "name": "911 Carrera",
       "tagline": "Coupé · rear engine",
-      "image_url": "/media/cars/911-carrera.png",
+      "image_url": "/media/cars/911-carrera.webp",
       "base_hue": 220,
       "specs": [
         [
@@ -29,7 +29,7 @@
       "slug": "718-boxster",
       "name": "718 Boxster",
       "tagline": "Roadster · mid-engine",
-      "image_url": "/media/cars/718-boxster.png",
+      "image_url": "/media/cars/718-boxster.webp",
       "base_hue": null,
       "specs": [
         [
@@ -54,7 +54,7 @@
       "slug": "taycan",
       "name": "Taycan",
       "tagline": "Sports sedan · fully electric",
-      "image_url": "/media/cars/taycan.png",
+      "image_url": "/media/cars/taycan.webp",
       "base_hue": 160,
       "specs": [
         [
@@ -79,7 +79,7 @@
       "slug": "cayenne",
       "name": "Cayenne",
       "tagline": "SUV · all-wheel drive",
-      "image_url": "/media/cars/cayenne.png",
+      "image_url": "/media/cars/cayenne.webp",
       "base_hue": 205,
       "specs": [
         [
@@ -133,8 +133,8 @@
       "year_label": "1931",
       "title": "It all starts with a design office",
       "description": "Ferdinand Porsche opens a design and engineering consultancy in Stuttgart. This is where the roots of Porsche Engineering lie.",
-      "photo_url": "/media/eras/1931.jpg",
-      "photo_caption": "",
+      "photo_url": "/media/eras/1931.webp",
+      "photo_caption": "VW Beetle prototype, 1936",
       "bg_color": "#1b1712",
       "accent_color": "#c8a96a"
     },
@@ -142,8 +142,8 @@
       "year_label": "1948",
       "title": "The first Porsche",
       "description": "The 356 “No. 1” Roadster, the first car to bear the Porsche name, is homologated in Gmünd, Austria.",
-      "photo_url": "/media/eras/1948.jpg",
-      "photo_caption": "356 “No. 1” Roadster",
+      "photo_url": "/media/eras/1948.webp",
+      "photo_caption": "Porsche 356 \"No. 1\" Roadster, 1948",
       "bg_color": "#221b12",
       "accent_color": "#d9b77a"
     },
@@ -151,8 +151,8 @@
       "year_label": "1963",
       "title": "A legend is born",
       "description": "The 901 is unveiled at the IAA in Frankfurt. It is later renamed the 911.",
-      "photo_url": "/media/eras/1963.jpg",
-      "photo_caption": "911 (pictured: 993 generation)",
+      "photo_url": "/media/eras/1963.webp",
+      "photo_caption": "Porsche 901, 1963",
       "bg_color": "#121820",
       "accent_color": "#9fb6c8"
     },
@@ -160,8 +160,8 @@
       "year_label": "1970",
       "title": "Victory at Le Mans",
       "description": "Porsche takes its first overall win at the 24 Hours of Le Mans, with the 917.",
-      "photo_url": "/media/eras/1970.jpg",
-      "photo_caption": "917 · Le Mans 1970",
+      "photo_url": "/media/eras/1970.webp",
+      "photo_caption": "Porsche 962 LM, Le Mans winner 1994",
       "bg_color": "#1d1008",
       "accent_color": "#ff8a2a"
     },
@@ -169,8 +169,8 @@
       "year_label": "1996",
       "title": "A mid-engine car for everyone",
       "description": "The Boxster brings a mid-engine roadster into the production line-up.",
-      "photo_url": "/media/eras/1996.jpg",
-      "photo_caption": "Boxster (986)",
+      "photo_url": "/media/eras/1996.webp",
+      "photo_caption": "Porsche Boxster, 1996",
       "bg_color": "#101318",
       "accent_color": "#b8bcc3"
     },
@@ -178,8 +178,8 @@
       "year_label": "2002",
       "title": "A new segment",
       "description": "The Cayenne is Porsche's first SUV and opens a new segment for the brand.",
-      "photo_url": "/media/cars/cayenne.png",
-      "photo_caption": "Pictured: current generation",
+      "photo_url": "/media/eras/2002.webp",
+      "photo_caption": "Porsche Cayenne Electric",
       "bg_color": "#0d1410",
       "accent_color": "#7fb58a"
     },
@@ -187,8 +187,8 @@
       "year_label": "2019",
       "title": "Fully electric",
       "description": "The Taycan becomes Porsche's first fully electric production car.",
-      "photo_url": "/media/eras/2019.jpg",
-      "photo_caption": "Taycan Turbo S · IAA 2019",
+      "photo_url": "/media/eras/2019.webp",
+      "photo_caption": "Porsche Taycan Turbo GT",
       "bg_color": "#05131c",
       "accent_color": "#58c7ff"
     },
@@ -196,8 +196,8 @@
       "year_label": "Today",
       "title": "The software-defined car",
       "description": "Connectivity, driver assistance, data and cloud: the next chapter is being written here, and this is where Porsche Engineering comes in.",
-      "photo_url": "/media/eras/today.jpg",
-      "photo_caption": "Macan Electric",
+      "photo_url": "/media/eras/today.webp",
+      "photo_caption": "Porsche 911 Turbo (992.2)",
       "bg_color": "#0a0a0b",
       "accent_color": "#ff4d5e"
     }
