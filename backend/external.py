@@ -5,10 +5,13 @@ route with elevation; Open-Meteo gives the current temperature. Both are
 wrapped behind small classes so tests can replace them with fakes.
 """
 
+import logging
 import os
 from dataclasses import dataclass
 
 import httpx
+
+log = logging.getLogger(__name__)
 
 # api.openrouteservice.org was retired in August 2026; HeiGIT now serves
 # openrouteservice (routing) and Pelias (place search) under api.heigit.org.
@@ -20,6 +23,17 @@ TIMEOUT = httpx.Timeout(15.0, connect=5.0)
 
 class ExternalServiceError(Exception):
     """An external API failed or is not configured."""
+
+
+def _failure(message: str, exc: httpx.HTTPError) -> ExternalServiceError:
+    """Log what the upstream API answered and add its status to the message,
+    so a failure in production can be diagnosed from the response alone."""
+    if isinstance(exc, httpx.HTTPStatusError):
+        status = exc.response.status_code
+        log.warning("%s: HTTP %s %s", message, status, exc.response.text[:300])
+        return ExternalServiceError(f"{message} (upstream HTTP {status})")
+    log.warning("%s: %s", message, exc.__class__.__name__)
+    return ExternalServiceError(f"{message} ({exc.__class__.__name__})")
 
 
 @dataclass(frozen=True)
@@ -56,7 +70,7 @@ class RouteService:
             )
             response.raise_for_status()
         except httpx.HTTPError as exc:
-            raise ExternalServiceError("Could not search for places") from exc
+            raise _failure("Could not search for places", exc) from exc
 
         places = []
         for feature in response.json().get("features", []):
@@ -77,7 +91,7 @@ class RouteService:
             )
             response.raise_for_status()
         except httpx.HTTPError as exc:
-            raise ExternalServiceError("Could not compute a road route") from exc
+            raise _failure("Could not compute a road route", exc) from exc
 
         feature = response.json()["features"][0]
         summary = feature["properties"]["summary"]
