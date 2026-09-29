@@ -71,6 +71,18 @@ def place_label(properties: dict) -> str:
     return ", ".join(unique)
 
 
+def smooth(values: list[float], radius: int = 2) -> list[float]:
+    """Centred moving average. Terrain data is noisy point to point, and
+    summing that noise would overstate the climbing; near the ends the window
+    shrinks symmetrically, so the start and end heights stay exact."""
+    smoothed = []
+    for i in range(len(values)):
+        half = min(radius, i, len(values) - 1 - i)
+        window = values[i - half:i + half + 1]
+        smoothed.append(sum(window) / len(window))
+    return smoothed
+
+
 def sample_points(coordinates: list[list[float]], max_points: int) -> list[list[float]]:
     """Keep at most max_points evenly spaced points, always with both ends."""
     if len(coordinates) <= max_points:
@@ -96,7 +108,8 @@ class RouteService:
         for feature in response.json().get("features", []):
             lon, lat = feature["geometry"]["coordinates"][:2]
             label = place_label(feature.get("properties", {}))
-            if label:
+            # Photon can return the same place twice (e.g. two station nodes).
+            if label and label not in {place.label for place in places}:
                 places.append(Place(label=label, lat=lat, lon=lon))
         return places
 
@@ -146,7 +159,7 @@ class RouteService:
         except (httpx.HTTPError, KeyError, TypeError, ValueError):
             log.warning("Elevation unavailable, planning the route as flat", exc_info=True)
             return [0.0] * len(points)
-        return heights
+        return smooth(heights)
 
 
 class WeatherService:

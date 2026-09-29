@@ -1,5 +1,7 @@
 """Turns a trip request into a saved, fully calculated trip."""
 
+from dataclasses import replace
+
 from sqlalchemy.orm import Session
 
 import ev_physics
@@ -35,6 +37,19 @@ def driving_speed_kmh(cruise_speed_kmh: float, distance_m: float, duration_s: fl
     return max(30.0, min(cruise_speed_kmh, route_average * 1.2))
 
 
+def match_road_distance(segments: list, road_distance_m: float) -> list:
+    """Stretch the segments so they add up to the real road length.
+
+    The route points are a sample of the road, and straight lines between
+    samples cut the corners, so they are a little shorter than the road.
+    """
+    sampled = sum(segment.distance_m for segment in segments)
+    if sampled <= 0 or road_distance_m <= 0:
+        return segments
+    factor = min(1.3, max(0.8, road_distance_m / sampled))
+    return [replace(segment, distance_m=segment.distance_m * factor) for segment in segments]
+
+
 def simplify_route(coordinates: list[list[float]]) -> list[list[float]]:
     """Keep at most MAX_ROUTE_POINTS_STORED points, as [lat, lon], for the map."""
     step = max(1, len(coordinates) // MAX_ROUTE_POINTS_STORED)
@@ -64,7 +79,9 @@ def plan_and_save(
     speed = driving_speed_kmh(request.cruise_speed_kmh, route.distance_m, route.duration_s)
     plan = ev_physics.plan_trip(
         vehicle=vehicle_from_model(ev_model),
-        segments=ev_physics.segments_from_coordinates(route.coordinates),
+        segments=match_road_distance(
+            ev_physics.segments_from_coordinates(route.coordinates), route.distance_m
+        ),
         start_soc=request.start_soc,
         speed_kmh=speed,
         temperature_c=temperature,

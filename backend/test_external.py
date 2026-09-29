@@ -92,3 +92,16 @@ def test_no_route_found(monkeypatch):
     monkeypatch.setattr(external.httpx, "get", lambda *a, **k: FakeResponse({"code": "NoRoute", "routes": []}))
     with pytest.raises(ExternalServiceError, match="No road route"):
         RouteService().route(Place("A", 48.0, 9.0), Place("B", 40.0, -70.0))
+
+
+def test_smooth_keeps_ends_and_straight_slopes():
+    assert external.smooth([100.0, 101.0, 102.0, 103.0]) == [100.0, 101.0, 102.0, 103.0]
+    # a single noisy spike is spread out, so the total climb gets smaller
+    noisy = external.smooth([0.0, 0.0, 50.0, 0.0, 0.0])
+    assert max(noisy) < 50.0 and noisy[0] == 0.0 and noisy[-1] == 0.0
+
+
+def test_geocode_drops_duplicate_labels(monkeypatch):
+    feature = {"geometry": {"coordinates": [9.18, 48.78]}, "properties": {"name": "Main Station", "country": "Germany"}}
+    monkeypatch.setattr(external.httpx, "get", lambda *a, **k: FakeResponse({"features": [feature, feature]}))
+    assert len(RouteService().geocode("station")) == 1
