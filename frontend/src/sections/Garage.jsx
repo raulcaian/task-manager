@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Showroom from '../components/Showroom';
 import { api } from '../lib/api';
 import {
   CATEGORY_LABELS,
@@ -35,7 +36,8 @@ export default function Garage() {
             Configure your Porsche
           </h2>
           <p className="section-lead">
-            Every price and rule comes from the database and is checked by the FastAPI
+            The lights come on one by one. Pick a car to open it in the configurator:
+            every price and rule comes from the database and is checked by the FastAPI
             backend. Prices are illustrative, VAT included.
           </p>
         </header>
@@ -46,14 +48,40 @@ export default function Garage() {
             The garage could not be loaded: {error.message}
           </p>
         )}
-        {data && <Configurator {...data} />}
+        {data && <GarageContent {...data} />}
       </div>
     </section>
   );
 }
 
-function Configurator({ models, paints, options }) {
+function GarageContent({ models, paints, options }) {
   const [modelSlug, setModelSlug] = useState(models[0]?.slug);
+  const configuratorRef = useRef(null);
+
+  // Choosing a car in the showroom opens it in the configurator below.
+  const choose = (slug) => {
+    setModelSlug(slug);
+    configuratorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  return (
+    <>
+      <Showroom models={models} onChoose={choose} />
+      <div ref={configuratorRef} id="configurator" className="configurator-anchor">
+        <h3 className="configurator-title">Configurator</h3>
+        <Configurator
+          models={models}
+          paints={paints}
+          options={options}
+          modelSlug={modelSlug}
+          onModelChange={setModelSlug}
+        />
+      </div>
+    </>
+  );
+}
+
+function Configurator({ models, paints, options, modelSlug, onModelChange }) {
   const [paintId, setPaintId] = useState(paints[0]?.id);
   const [selected, setSelected] = useState([DEFAULT_WHEELS]);
   const [quote, setQuote] = useState({ result: null, errors: [], pending: true });
@@ -82,10 +110,15 @@ function Configurator({ models, paints, options }) {
     };
   }, [modelSlug, paintId, selected]);
 
-  const chooseModel = (slug) => {
-    setModelSlug(slug);
-    setSelected((current) => selectionForModel(current, options, slug));
-  };
+  // Keep only the options the chosen model can have (also when the model
+  // was picked in the showroom above).
+  const [optionsModel, setOptionsModel] = useState(modelSlug);
+  if (optionsModel !== modelSlug) {
+    setOptionsModel(modelSlug);
+    setSelected((current) => selectionForModel(current, options, modelSlug));
+  }
+
+  const chooseModel = (slug) => onModelChange(slug);
 
   return (
     <div className="configurator">
