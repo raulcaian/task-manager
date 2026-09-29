@@ -1,0 +1,123 @@
+.hero {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: 100vh;
+  min-height: 100svh; /* ignores the mobile browser address bar */
+  padding-block: calc(var(--header-height) + var(--space-8)) var(--space-24);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.hero__media video,
+.hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+}
+
+/* Darken the bottom and left so the text always has enough contrast. */
+.hero__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, var(--color-bg) 0%, rgb(11 11 13 / 0.55) 40%, transparent 75%),
+    linear-gradient(to right, rgb(11 11 13 / 0.6), transparent 60%);
+}
+
+.hero__content {
+  display: grid;
+  gap: var(--space-6);
+  justify-items: start;
+}
+
+.hero__title {
+  font-size: var(--text-hero);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+}
+
+.hero__lead {
+  max-width: 34rem;
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color var(--duration-fast),
+    transform var(--duration-fast);
+}
+
+.button:hover {
+  background: var(--color-accent-strong);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.hero__scroll {
+  position: absolute;
+  bottom: var(--space-8);
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  transform: translateX(-50%);
+}
+
+.hero__scroll span {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(var(--color-text), transparent);
+  animation: scroll-cue 2s var(--ease-out) infinite;
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  51% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding-bottom: var(--space-16);
+  }
+
+  .hero__scroll {
+    display: none;
+  }
+}

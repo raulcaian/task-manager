@@ -1,0 +1,18 @@
+.placeholder {
+  padding-block: var(--space-24);
+  border-top: 1px solid var(--color-line);
+}
+
+.placeholder .container {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.placeholder__title {
+  font-size: var(--text-2xl);
+}
+
+.placeholder__text {
+  max-width: 40rem;
+  color: var(--color-text-muted);
+}
