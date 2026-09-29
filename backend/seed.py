@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 
 from db import SessionLocal
-from models import CarModel, Era, ModelSpec, Paint
+from models import CarModel, Era, EvModel, ModelSpec, Paint
 
 DATA_FILE = Path(__file__).parent / "seed_data.json"
 
@@ -13,7 +13,7 @@ def seed() -> None:
     data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
 
     with SessionLocal() as session:
-        # Start from empty tables so the script can safely run again.
+        # Showroom content: start from empty tables so the script can safely run again.
         session.execute(delete(ModelSpec))
         session.execute(delete(CarModel))
         session.execute(delete(Paint))
@@ -40,11 +40,25 @@ def seed() -> None:
         for order, item in enumerate(data["eras"]):
             session.add(Era(sort_order=order, **item))
 
+        # EV models are referenced by saved trips, so they are updated in
+        # place (matched by slug) instead of being deleted and re-created.
+        for order, item in enumerate(data["ev_models"]):
+            ev_model = session.scalars(
+                select(EvModel).where(EvModel.slug == item["slug"])
+            ).first()
+            if ev_model is None:
+                ev_model = EvModel(slug=item["slug"])
+                session.add(ev_model)
+            for key, value in item.items():
+                setattr(ev_model, key, value)
+            ev_model.sort_order = order
+
         session.commit()
 
     print(
         f"Seeded {len(data['models'])} models, "
-        f"{len(data['paints'])} paints, {len(data['eras'])} eras."
+        f"{len(data['paints'])} paints, {len(data['eras'])} eras, "
+        f"{len(data['ev_models'])} EV models."
     )
 
 
