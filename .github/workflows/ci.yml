@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # "Run workflow" button in the Actions tab: re-run checks and redeploy main.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -96,7 +98,7 @@ jobs:
   deploy-backend:
     name: Deploy backend (ECR + EC2)
     needs: [backend-tests, backend-docker, frontend]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     concurrency:
       group: deploy-backend
