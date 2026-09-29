@@ -10,7 +10,10 @@ from dataclasses import dataclass
 
 import httpx
 
-ORS_BASE_URL = "https://api.openrouteservice.org"
+# api.openrouteservice.org was retired in August 2026; HeiGIT now serves
+# openrouteservice (routing) and Pelias (place search) under api.heigit.org.
+ORS_DIRECTIONS_URL = "https://api.heigit.org/openrouteservice/v2/directions/driving-car/geojson"
+PELIAS_AUTOCOMPLETE_URL = "https://api.heigit.org/pelias/v1/autocomplete"
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 TIMEOUT = httpx.Timeout(15.0, connect=5.0)
 
@@ -46,7 +49,7 @@ class RouteService:
     def geocode(self, query: str, limit: int = 5) -> list[Place]:
         try:
             response = httpx.get(
-                f"{ORS_BASE_URL}/geocode/autocomplete",
+                PELIAS_AUTOCOMPLETE_URL,
                 params={"text": query, "size": limit},
                 headers=self._headers(),
                 timeout=TIMEOUT,
@@ -64,7 +67,7 @@ class RouteService:
     def route(self, origin: Place, destination: Place) -> Route:
         try:
             response = httpx.post(
-                f"{ORS_BASE_URL}/v2/directions/driving-car/geojson",
+                ORS_DIRECTIONS_URL,
                 json={
                     "coordinates": [[origin.lon, origin.lat], [destination.lon, destination.lat]],
                     "elevation": True,
