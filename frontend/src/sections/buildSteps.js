@@ -52,3 +52,19 @@ export function activeStep(progress) {
   });
   return current;
 }
+
+// Shown when the car is finished. Manufacturer data for the 911 Carrera
+// (992.2) coupé, from porsche.com; 0–100 km/h without Sport Chrono.
+export const FINISH_STATS = [
+  { value: 394, decimals: 0, unit: 'PS', label: 'Power · 290 kW' },
+  { value: 450, decimals: 0, unit: 'Nm', label: 'Max torque' },
+  { value: 4.1, decimals: 1, unit: 's', label: '0–100 km/h' },
+  { value: 294, decimals: 0, unit: 'km/h', label: 'Top speed' },
+  { value: 3.0, decimals: 1, unit: 'L', label: 'Twin-turbo flat-six' },
+];
+
+/** Numbers count up as the finish stage is revealed (ease-out). */
+export function countUp(value, reveal) {
+  const eased = 1 - (1 - Math.min(1, Math.max(0, reveal))) ** 3;
+  return value * eased;
+}

@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useScrollProgress } from '../hooks/useScrollProgress';
-import { activeStep, BUILD_STEPS, layerReveal } from './buildSteps';
+import { activeStep, BUILD_STEPS, countUp, FINISH_STATS, layerReveal } from './buildSteps';
 import './BuildSequence.css';
 
 /*
@@ -63,6 +63,25 @@ export default function BuildSequence() {
               />
             )}
           </div>
+        </div>
+
+        <div
+          className="container build__stats"
+          style={{ opacity: reveal[3], transform: `translateY(${(1 - reveal[3]) * 24}px)` }}
+          aria-hidden={reveal[3] < 1}
+        >
+          <dl>
+            {FINISH_STATS.map((stat) => (
+              <div key={stat.label} className="build__stat">
+                <dt>{stat.label}</dt>
+                <dd>
+                  {countUp(stat.value, reveal[3]).toFixed(stat.decimals)}
+                  <span>{stat.unit}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="build__stats-source">911 Carrera (992.2) · manufacturer data</p>
         </div>
 
         <ol className="container build__steps">

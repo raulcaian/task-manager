@@ -25,3 +25,12 @@ describe('build steps', () => {
     expect(activeStep(1)).toBe(3);
   });
 });
+
+describe('countUp', () => {
+  it('goes from zero to the full value', async () => {
+    const { countUp } = await import('./buildSteps');
+    expect(countUp(394, 0)).toBe(0);
+    expect(countUp(394, 1)).toBe(394);
+    expect(countUp(394, 0.5)).toBeGreaterThan(197); // ease-out is ahead halfway
+  });
+});
