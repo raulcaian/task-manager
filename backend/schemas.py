@@ -31,6 +31,9 @@ class PaintOut(BaseModel):
     swatch_hex: str
     hue: int | None
     price_eur: int
+    # Display name in the requested language; `name` stays English because
+    # it also names the paint's image files (e.g. taycan-blue.webp).
+    label: str = ""
 
 
 class EraOut(BaseModel):

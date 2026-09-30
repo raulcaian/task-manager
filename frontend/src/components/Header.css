@@ -20,26 +20,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-6);
   height: 100%;
 }
 
-.wordmark {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
+.site-header__home {
   text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-  font-size: var(--text-sm);
 }
 
-.wordmark__main {
-  font-weight: 700;
-}
-
-.wordmark__sub {
-  font-weight: 400;
-  color: var(--color-text-muted);
+.site-header__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .site-nav ul {
@@ -158,5 +150,11 @@
 
   .site-nav a::after {
     display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .site-header__tools {
+    gap: var(--space-1);
   }
 }

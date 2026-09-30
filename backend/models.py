@@ -17,6 +17,8 @@ class CarModel(Base):
     base_hue: Mapped[int | None]
     # Illustrative list price in euros, VAT included.
     base_price_eur: Mapped[int] = mapped_column(default=0)
+    # Translations: {"de": {"field": "..."}, "ro": {...}}; English is the column itself.
+    i18n: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     sort_order: Mapped[int] = mapped_column(default=0)
 
     specs: Mapped[list["ModelSpec"]] = relationship(
@@ -48,6 +50,8 @@ class Paint(Base):
     swatch_hex: Mapped[str] = mapped_column(String(7))
     hue: Mapped[int | None]
     price_eur: Mapped[int] = mapped_column(default=0)
+    # Translations: {"de": {"field": "..."}, "ro": {...}}; English is the column itself.
+    i18n: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     sort_order: Mapped[int] = mapped_column(default=0)
 
 
@@ -67,6 +71,8 @@ class ConfigOption(Base):
     # Option codes that must / must not be selected together with this one.
     requires: Mapped[list] = mapped_column(JSON, default=list)
     excludes: Mapped[list] = mapped_column(JSON, default=list)
+    # Translations: {"de": {"field": "..."}, "ro": {...}}; English is the column itself.
+    i18n: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     sort_order: Mapped[int] = mapped_column(default=0)
 
 
@@ -81,6 +87,8 @@ class Era(Base):
     photo_caption: Mapped[str] = mapped_column(String(200), default="")
     bg_color: Mapped[str] = mapped_column(String(7))
     accent_color: Mapped[str] = mapped_column(String(7))
+    # Translations: {"de": {"field": "..."}, "ro": {...}}; English is the column itself.
+    i18n: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     sort_order: Mapped[int] = mapped_column(default=0)
 
 

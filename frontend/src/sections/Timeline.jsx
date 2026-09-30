@@ -1,28 +1,30 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import EraBackdrop from '../components/EraBackdrop';
-import { api } from '../lib/api';
+import { useI18n } from '../i18n/context';
+import { api, errorMessage } from '../lib/api';
 import { useApi } from '../hooks/useApi';
 import { useScrollProgress } from '../hooks/useScrollProgress';
 import { FACES_LEFT, roadPosition } from './timelineRoad';
 import './Timeline.css';
 
-const loadEras = ({ signal }) => api.eras({ signal });
 
 export default function Timeline() {
+  const { t, lang } = useI18n();
+  const loadEras = useCallback(({ signal }) => api.eras({ signal, lang }), [lang]);
   const { data: eras, error, loading } = useApi(loadEras);
 
   return (
     <section id="timeline" className="timeline" aria-labelledby="timeline-title">
       {(loading || error) && (
         <div className="container timeline__status">
-          <p className="eyebrow">02 · Heritage</p>
+          <p className="eyebrow">{t('timeline.eyebrow')}</p>
           <h2 id="timeline-title" className="section-title">
-            Nine decades of engineering
+            {t('timeline.title')}
           </h2>
-          {loading && <p className="status">Loading the timeline…</p>}
+          {loading && <p className="status">{t('timeline.loading')}</p>}
           {error && (
             <p className="status status--error" role="alert">
-              The timeline could not be loaded: {error.message}
+              {t('timeline.error', { message: errorMessage(error, t) })}
             </p>
           )}
         </div>
@@ -38,6 +40,9 @@ export default function Timeline() {
  * and the car on the road changes to the model of each era.
  */
 function Road({ eras }) {
+  const { t } = useI18n();
+  // The API keeps "Today" as a stable key (it also picks the scenery); show it translated.
+  const yearLabel = (era) => (era.year_label === 'Today' ? t('timeline.today') : era.year_label);
   const sectionRef = useRef(null);
   const progress = useScrollProgress(sectionRef);
   const { index, position } = roadPosition(progress, eras.length);
@@ -73,13 +78,13 @@ function Road({ eras }) {
         </div>
         <div className="road-shade" aria-hidden="true" />
         <div className="road-stage__header container">
-          <p className="eyebrow">02 · Heritage</p>
+          <p className="eyebrow">{t('timeline.eyebrow')}</p>
           <h2 id="timeline-title" className="road-stage__title">
-            Nine decades of engineering
+            {t('timeline.title')}
           </h2>
         </div>
 
-        <nav className="road-nav" aria-label="Years">
+        <nav className="road-nav" aria-label={t('timeline.years')}>
           {eras.map((e, i) => (
             <button
               key={e.id}
@@ -88,7 +93,7 @@ function Road({ eras }) {
               aria-current={i === index ? 'step' : undefined}
               onClick={() => jumpTo(i)}
             >
-              {e.year_label}
+              {yearLabel(e)}
             </button>
           ))}
         </nav>
@@ -97,10 +102,10 @@ function Road({ eras }) {
           {eras.map((e, i) => (
             <li key={e.id} className="road-era" aria-hidden={i !== index}>
               <span className="road-era__year" style={{ color: e.accent_color }} aria-hidden="true">
-                {e.year_label}
+                {yearLabel(e)}
               </span>
               <p className="road-era__label" style={{ color: e.accent_color }}>
-                {e.year_label}
+                {yearLabel(e)}
               </p>
               <h3 className="road-era__title">{e.title}</h3>
               <p className="road-era__text">{e.description}</p>

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, selectinload
 
 import trip_planner
 from db import get_session
+from i18n import get_language
 from external import ExternalServiceError, RouteService, WeatherService, get_route_service, get_weather_service
 from models import EvModel, Trip
 from rate_limit import geocode_limit, plan_trip_limit
@@ -23,9 +24,10 @@ def list_ev_models(session: Session = Depends(get_session)):
 def geocode(
     q: str = Query(min_length=2, max_length=100),
     routes: RouteService = Depends(get_route_service),
+    lang: str = Depends(get_language),
 ):
     try:
-        return routes.geocode(q)
+        return routes.geocode(q, lang=lang)
     except ExternalServiceError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 

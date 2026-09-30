@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { useI18n } from '../i18n/context';
 import { formatEuro } from '../lib/format';
 import './Showroom.css';
 
@@ -24,6 +25,7 @@ export default function Showroom({ models, onChoose }) {
 }
 
 function Bay({ model, index, onChoose }) {
+  const { t, locale } = useI18n();
   const ref = useRef(null);
   const reducedMotion = usePrefersReducedMotion();
   const noObserver = typeof IntersectionObserver === 'undefined';
@@ -58,7 +60,7 @@ function Bay({ model, index, onChoose }) {
       type="button"
       className={`bay${isLit ? ' is-lit' : ''}`}
       onClick={() => onChoose(model.slug)}
-      aria-label={`${model.name}: open in the configurator`}
+      aria-label={t('garage.openCar', { name: model.name })}
     >
       <span className="bay__tube" aria-hidden="true" />
       <span className="bay__cone" aria-hidden="true" />
@@ -70,8 +72,10 @@ function Bay({ model, index, onChoose }) {
           <span className="bay__name">{model.name}</span>
         </span>
         <span className="bay__cta">
-          <span className="bay__price">from {formatEuro(model.base_price_eur)}</span>
-          Configure →
+          <span className="bay__price">
+            {t('common.from', { price: formatEuro(model.base_price_eur, locale) })}
+          </span>
+          {t('garage.configure')}
         </span>
       </span>
     </button>

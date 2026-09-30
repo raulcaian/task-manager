@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { useI18n } from '../i18n/context';
 import './Hero.css';
 
 const POSTER = '/media/intro/intro-poster.webp';
@@ -12,6 +13,7 @@ function pickVideo() {
 
 export default function Hero() {
   const reducedMotion = usePrefersReducedMotion();
+  const { t } = useI18n();
   const videoRef = useRef(null);
   const [src] = useState(pickVideo);
   const [playing, setPlaying] = useState(false);
@@ -57,27 +59,24 @@ export default function Hero() {
       </div>
 
       <div className="hero__content container">
-        <p className="eyebrow">A Porsche Engineering portfolio</p>
+        <p className="eyebrow">{t('hero.eyebrow')}</p>
         <h1 id="hero-title" className="hero__title">
-          From sketch
+          {t('hero.title1')}
           <br />
-          to street.
+          {t('hero.title2')}
         </h1>
-        <p className="hero__lead">
-          Scroll to watch a 911 take shape, configure your own in the garage and plan an
-          electric road trip, all powered by a FastAPI backend on AWS.
-        </p>
+        <p className="hero__lead">{t('hero.lead')}</p>
         <a className="button" href="#build">
-          Start the build
+          {t('hero.cta')}
         </a>
       </div>
 
       {/* Moving content longer than 5 s needs a pause control (WCAG 2.2.2). */}
       <button type="button" className="hero__playback" onClick={togglePlayback}>
-        {playing ? 'Pause video' : 'Play video'}
+        {playing ? t('hero.pause') : t('hero.play')}
       </button>
 
-      <a className="hero__scroll" href="#build" aria-label="Scroll to the build section">
+      <a className="hero__scroll" href="#build" aria-label={t('hero.scroll')}>
         <span aria-hidden="true" />
       </a>
     </section>

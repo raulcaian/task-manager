@@ -158,6 +158,11 @@ Prices and rules are data in PostgreSQL (`config_options`), and `backend/configu
 
 The browser uses the same rules only to be friendly (hiding options a model can't have); the backend is the source of truth. Prices are illustrative.
 
+### Languages (EN / DE / RO)
+
+- **Frontend:** every text of the interface lives in `frontend/src/i18n/translations.js`; a small React context gives components `t('key')`, the language and the locale for prices and numbers (€125,900 vs 125.900 €). The choice is remembered in the browser; the first visit follows the browser language. `<html lang>` follows the choice for screen readers. A test checks that all three languages have exactly the same keys.
+- **Backend:** content rows (models, paints, eras, options) carry their translations in an `i18n` JSON column. Every content endpoint accepts `?lang=de|ro` (or the `Accept-Language` header) and falls back to English, so a missing translation never breaks a page. Configurator rule messages are translated too (*"Keramik-Verbundbremsen erfordert 21-Zoll-Sporträder."*).
+
 ### Contact form
 
 `POST /api/contact` checks a hidden honeypot field and a **Cloudflare Turnstile** token, stores the message in PostgreSQL and then emails it through **Amazon SES** using the EC2 instance role (no keys). The message is saved before the email is sent, so an email failure never loses it. It is rate limited to 5 messages per hour per visitor.
@@ -206,7 +211,8 @@ Every merge into `main` that passes all checks is deployed automatically by the 
 - [x] Configurator prices and rules (`/api/options`, `/api/quote`)
 - [x] Contact form with Turnstile and SES
 - [x] Continuous deployment to S3 / EC2 with CloudFront invalidation
-- [ ] Animated logo
+- [x] Animated logo (the showroom lights come on)
+- [x] English, German and Romanian
 - [ ] Final design polish (colours, spacing, mobile details)
 
 ## Media
