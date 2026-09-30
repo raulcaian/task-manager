@@ -1,3 +1,4 @@
+import Footer from './components/Footer';
 import Header from './components/Header';
 import BuildSequence from './sections/BuildSequence';
 import Contact from './sections/Contact';
@@ -24,17 +25,7 @@ function App() {
         <Contact />
       </main>
 
-      <footer className="site-footer">
-        <div className="container site-footer__inner">
-          <p>
-            Portfolio project by Raul Caian · React, FastAPI, PostgreSQL, Docker, AWS.
-          </p>
-          <p>
-            Not affiliated with Porsche AG. Car names and photos belong to their respective
-            owners. Prices are illustrative.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }
