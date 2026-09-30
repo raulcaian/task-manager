@@ -105,63 +105,39 @@
 
 .route-map {
   width: 100%;
-  height: auto;
+  height: 26rem;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
+  background: #0e0f11; /* shown while the tiles load */
+  z-index: 0; /* keeps Leaflet's panes under the fixed header */
 }
 
-.route-map__grid {
-  stroke: var(--color-line);
-  stroke-width: 1;
+.route-map .leaflet-control-attribution {
+  background: rgb(11 11 13 / 0.75);
+  color: var(--color-text-muted);
 }
 
-.route-map__casing,
-.route-map__line {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.route-map .leaflet-control-attribution a {
+  color: var(--color-text);
 }
 
-.route-map__casing {
-  stroke: var(--color-bg);
-  stroke-width: 7;
+.route-map .leaflet-popup-content-wrapper,
+.route-map .leaflet-popup-tip,
+.route-map .leaflet-tooltip {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-line-strong);
 }
 
-.route-map__line {
-  stroke: var(--color-accent);
-  stroke-width: 3;
-}
-
-.route-map__stop circle {
-  fill: var(--color-bg);
-  stroke: var(--color-accent);
-  stroke-width: 2;
-}
-
-.route-map__stop text {
-  font-size: 11px;
+.route-map__stop-icon {
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--color-accent);
+  border-radius: 50%;
+  background: var(--color-bg);
+  font-size: 12px;
   font-weight: 700;
-  fill: var(--color-text);
-}
-
-.route-map__end circle {
-  fill: var(--color-text);
-  stroke: var(--color-bg);
-  stroke-width: 2;
-}
-
-.route-map__end text {
-  font-size: 13px;
-  font-weight: 600;
-  fill: var(--color-text);
-  paint-order: stroke;
-  stroke: var(--color-surface);
-  stroke-width: 4px;
-}
-
-.route-map__end--destination circle {
-  fill: var(--color-accent-strong);
+  color: var(--color-text);
 }
 
 .trip__osm {
