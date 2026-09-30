@@ -1,7 +1,7 @@
 .build {
   position: relative;
-  /* 4 screens of scrolling for 4 steps; the stage stays pinned meanwhile. */
-  height: 400vh;
+  /* 5 screens of scrolling: four stages plus the pauses between them */
+  height: 500vh;
   border-top: 1px solid var(--color-line);
 }
 
@@ -9,12 +9,48 @@
   position: sticky;
   top: 0;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr auto auto;
   gap: var(--space-6);
   height: 100vh;
   height: 100svh;
   padding-block: calc(var(--header-height) + var(--space-6)) var(--space-8);
   overflow: hidden;
+  isolation: isolate;
+}
+
+/* One setting per stage, cross-fading as the stages change. */
+.build__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transition: opacity 0.2s linear;
+}
+
+.build__backdrop--sketch {
+  background-color: #0c2238;
+  background-image:
+    linear-gradient(rgb(120 190 255 / 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(120 190 255 / 0.12) 1px, transparent 1px),
+    linear-gradient(rgb(120 190 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(120 190 255 / 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 45%, #123a5e, #081828 75%);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px, 100% 100%;
+}
+
+.build__backdrop--clay {
+  background: radial-gradient(ellipse at 50% 60%, #3b3632 0%, #1d1b19 60%, #121110 100%);
+}
+
+.build__backdrop--paint {
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.06), transparent 18%, transparent 82%, rgb(255 255 255 / 0.06)),
+    radial-gradient(ellipse at 50% 55%, #2a2d33 0%, #111216 65%, #0a0a0c 100%);
+}
+
+.build__backdrop--finish {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 8%, rgb(255 246 232 / 0.18), transparent 70%),
+    radial-gradient(ellipse at 50% 80%, #26211d 0%, #0e0d0c 60%, #080808 100%);
 }
 
 .build__header {
@@ -26,12 +62,34 @@
   font-size: var(--text-2xl);
 }
 
+.build__car-area {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+/* The stage name, huge and faint behind the car. */
+.build__watermark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(5rem, 18vw, 16rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.04);
+  pointer-events: none;
+}
+
 .build__car {
   position: relative;
-  align-self: center;
   width: min(100% - 2 * var(--gutter), 70rem);
-  margin-inline: auto;
   aspect-ratio: 2000 / 633;
+}
+
+.build__stage.is-finish .build__car {
+  -webkit-box-reflect: below 2px linear-gradient(transparent 70%, rgb(255 255 255 / 0.12));
 }
 
 .build__layer {
@@ -43,15 +101,83 @@
   will-change: clip-path;
 }
 
+.build__dims {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transition: opacity 0.3s;
+}
+
+.build__dims line {
+  stroke: #8fd0ff;
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+.build__dims text {
+  fill: #8fd0ff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  transition: opacity 0.4s;
+}
+
 .build__scanline {
   position: absolute;
-  top: -6%;
-  bottom: -6%;
+  top: -8%;
+  bottom: -8%;
   width: 2px;
-  background: linear-gradient(transparent, var(--color-accent-strong), transparent);
-  box-shadow: 0 0 24px 4px rgb(217 154 108 / 0.45);
+  background: #ffffff;
+  box-shadow:
+    0 0 10px 2px rgb(143 208 255 / 0.9),
+    0 0 40px 10px rgb(143 208 255 / 0.35);
   transform: translateX(-1px);
   pointer-events: none;
+}
+
+.build__stats dl {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin: 0;
+}
+
+.build__stat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-1);
+}
+
+.build__stat dt {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.build__stat dd {
+  margin: 0;
+  font-size: clamp(2rem, 1.2rem + 2.4vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.build__stat dd span {
+  margin-left: 0.25em;
+  font-size: 0.4em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-accent-strong);
+}
+
+.build__stats-source {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
 }
 
 .build__steps {
@@ -66,17 +192,33 @@
 .build__step {
   display: grid;
   gap: var(--space-1);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-line);
   color: var(--color-text-muted);
-  transition:
-    color var(--duration-base),
-    border-color var(--duration-base);
+  opacity: 0.55;
+  transition: opacity var(--duration-base), color var(--duration-base);
+}
+
+.build__step.is-done {
+  opacity: 0.8;
 }
 
 .build__step.is-active {
-  border-top-color: var(--color-accent);
   color: var(--color-text);
+  opacity: 1;
+}
+
+/* Each step fills its own progress bar while it is being built. */
+.build__step-bar {
+  order: -1;
+  height: 2px;
+  margin-bottom: var(--space-3);
+  background: var(--color-line);
+}
+
+.build__step-bar span {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  transform-origin: left;
 }
 
 .build__step-number {
@@ -95,27 +237,21 @@
   font-size: var(--text-sm);
 }
 
-.build__progress {
-  position: absolute;
-  inset: auto 0 0;
-  height: 2px;
-  background: var(--color-line);
-}
-
-.build__progress span {
-  display: block;
-  height: 100%;
-  background: var(--color-accent);
-  transform-origin: left;
-}
-
 @media (max-width: 760px) {
+  .build__stats dl {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .build__stat:nth-child(n + 4) {
+    display: none;
+  }
+
   .build__steps {
     grid-template-columns: 1fr;
     gap: 0;
   }
 
-  /* On phones only the current step is described, to keep the car visible. */
   .build__step {
     display: none;
   }
@@ -123,4 +259,17 @@
   .build__step.is-active {
     display: grid;
   }
+
+  .build__dims text {
+    display: none;
+  }
+}
+
+/* The finished car needs no label behind it. */
+.build__stage.is-finish .build__watermark {
+  opacity: 0;
+}
+
+.build__watermark {
+  transition: opacity 0.4s;
 }
