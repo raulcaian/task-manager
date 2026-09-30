@@ -4,7 +4,7 @@
  */
 export const OWNER = {
   name: 'Raul Caian',
-  email: 'adresa-ta@email.com', // TODO: your email address
+  email: 'caian.stefan05@yahoo.com',
   location: 'Cluj-Napoca, Romania',
   github: 'https://github.com/raulcaian',
   linkedin: '', // TODO: your LinkedIn profile URL (hidden while empty)
