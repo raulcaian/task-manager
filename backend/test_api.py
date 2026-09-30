@@ -44,7 +44,7 @@ def test_internal_fields_are_not_exposed():
 def test_list_paints_in_order():
     paints = client.get("/api/paints").json()
     assert [paint["name"] for paint in paints] == [
-        "Red", "Blue", "Green", "Silver", "Black",
+        "Original", "Red", "Blue", "Green", "Silver", "Black",
     ]
 
 

@@ -5,7 +5,8 @@ import {
   CATEGORY_LABELS,
   DEFAULT_WHEELS,
   isAvailable,
-  maskUrl,
+  ORIGINAL_PAINT,
+  paintedImageUrl,
   ruleHint,
   selectionForModel,
   toggleOption,
@@ -139,7 +140,7 @@ function Configurator({ models, paints, options, modelSlug, onModelChange }) {
           ))}
         </div>
 
-        <PaintedCar model={model} paint={paint} />
+        <PaintedCar model={model} paints={paints} paint={paint} />
 
         <p className="configurator__tagline">{model.tagline}</p>
         <dl className="specs">
@@ -165,7 +166,10 @@ function Configurator({ models, paints, options, modelSlug, onModelChange }) {
                   checked={p.id === paintId}
                   onChange={() => setPaintId(p.id)}
                 />
-                <span className="swatch__color" style={{ background: p.swatch_hex }} />
+                <span
+                  className={`swatch__color${p.name === ORIGINAL_PAINT ? ' swatch__color--original' : ''}`}
+                  style={p.name === ORIGINAL_PAINT ? { backgroundImage: `url(${model.image_url})` } : { background: p.swatch_hex }}
+                />
                 <span className="swatch__label">
                   {p.name}
                   <small>{p.price_eur ? `+${formatEuro(p.price_eur)}` : 'Included'}</small>
@@ -212,23 +216,22 @@ function Configurator({ models, paints, options, modelSlug, onModelChange }) {
 }
 
 /*
- * The photo is recoloured in the browser: two layers clipped by a mask of the
- * car body (made from the photo, without the floor shadow). "multiply" pulls
- * light cars (white, yellow) towards the paint, then "color" sets the hue
- * while keeping the photo's reflections and shading.
+ * Every paint is a pre-rendered photo (scripts/make_paint_variants.py repaints
+ * only the body, keeping glass, tyres and rims). All of them are stacked and
+ * the chosen one fades in, so switching colour is instant and smooth.
  */
-function PaintedCar({ model, paint }) {
-  const url = `url(${maskUrl(model.image_url)})`;
-  const mask = { WebkitMaskImage: url, maskImage: url };
+function PaintedCar({ model, paints, paint }) {
+  const label = paint?.name === ORIGINAL_PAINT ? 'its original paint' : `${paint?.name ?? 'original'} paint`;
   return (
-    <div className="painted-car">
-      <img src={model.image_url} alt={`${model.name} in ${paint?.name ?? 'factory'} paint`} />
-      {paint && (
-        <>
-          <span className="painted-car__tint painted-car__tint--multiply" style={{ ...mask, background: paint.swatch_hex }} />
-          <span className="painted-car__tint painted-car__tint--color" style={{ ...mask, background: paint.swatch_hex }} />
-        </>
-      )}
+    <div className="painted-car" role="img" aria-label={`${model.name} in ${label}`}>
+      {paints.map((p) => (
+        <img
+          key={p.id}
+          src={paintedImageUrl(model.image_url, p.name)}
+          alt=""
+          className={`painted-car__layer${p.id === paint?.id ? ' is-shown' : ''}`}
+        />
+      ))}
     </div>
   );
 }

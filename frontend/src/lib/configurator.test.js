@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isAvailable, ruleHint, selectionForModel, toggleOption } from './configurator';
+import { isAvailable, paintedImageUrl, ruleHint, selectionForModel, toggleOption } from './configurator';
 
 const OPTIONS = [
   { code: 'wheels-standard', category: 'wheels', name: 'Standard', available_for: null, requires: [], excludes: [] },
@@ -35,5 +35,10 @@ describe('configurator helpers', () => {
   it('describes the rules of an option', () => {
     expect(ruleHint(OPTIONS[3], OPTIONS)).toBe('Requires Sport');
     expect(ruleHint(OPTIONS[4], OPTIONS)).toBe('Not with Brakes');
+  });
+
+  it('points to the pre-rendered photo of each paint', () => {
+    expect(paintedImageUrl('/media/cars/taycan.webp', 'Blue')).toBe('/media/cars/taycan-blue.webp');
+    expect(paintedImageUrl('/media/cars/taycan.webp', 'Original')).toBe('/media/cars/taycan.webp');
   });
 });

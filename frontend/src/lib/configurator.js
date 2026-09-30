@@ -49,5 +49,13 @@ export const CATEGORY_LABELS = {
   practical: 'Practical',
 };
 
-/** The body mask used to recolour a car photo: 911-carrera.webp -> 911-carrera-mask.webp */
-export const maskUrl = (imageUrl) => imageUrl.replace(/\.webp$/, '-mask.webp');
+export const ORIGINAL_PAINT = 'Original';
+
+/**
+ * The pre-rendered photo of a car in a paint (scripts/make_paint_variants.py):
+ * 911-carrera.webp + "Blue" -> 911-carrera-blue.webp. "Original" is the photo itself.
+ */
+export function paintedImageUrl(imageUrl, paintName) {
+  if (!paintName || paintName === ORIGINAL_PAINT) return imageUrl;
+  return imageUrl.replace(/\.webp$/, `-${paintName.toLowerCase()}.webp`);
+}

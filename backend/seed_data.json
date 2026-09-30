@@ -107,6 +107,12 @@
   ],
   "paints": [
     {
+      "name": "Original",
+      "swatch_hex": "#8a8a8a",
+      "hue": null,
+      "price_eur": 0
+    },
+    {
       "name": "Red",
       "swatch_hex": "#b3121b",
       "hue": 355,
