@@ -18,8 +18,8 @@ function App() {
       <main id="main" tabIndex={-1}>
         <Hero />
         <BuildSequence />
-        <Garage />
         <Timeline />
+        <Garage />
         <TripPlanner />
         <Contact />
       </main>

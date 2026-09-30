@@ -32,7 +32,7 @@ export default function Garage() {
     <section id="garage" className="section garage" aria-labelledby="garage-title">
       <div className="container">
         <header className="section-header">
-          <p className="eyebrow">02 · Garage</p>
+          <p className="eyebrow">03 · Garage</p>
           <h2 id="garage-title" className="section-title">
             Configure your Porsche
           </h2>

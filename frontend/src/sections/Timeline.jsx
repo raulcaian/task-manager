@@ -15,7 +15,7 @@ export default function Timeline() {
     <section id="timeline" className="timeline" aria-labelledby="timeline-title">
       {(loading || error) && (
         <div className="container timeline__status">
-          <p className="eyebrow">03 · Heritage</p>
+          <p className="eyebrow">02 · Heritage</p>
           <h2 id="timeline-title" className="section-title">
             Nine decades of engineering
           </h2>
@@ -73,7 +73,7 @@ function Road({ eras }) {
         </div>
         <div className="road-shade" aria-hidden="true" />
         <div className="road-stage__header container">
-          <p className="eyebrow">03 · Heritage</p>
+          <p className="eyebrow">02 · Heritage</p>
           <h2 id="timeline-title" className="road-stage__title">
             Nine decades of engineering
           </h2>
