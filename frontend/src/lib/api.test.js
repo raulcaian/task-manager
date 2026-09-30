@@ -24,7 +24,8 @@ describe('api', () => {
   });
 
   it('adds the language to the URL', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse([]));
+    // A Response body can be read only once: give each call a fresh one.
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(jsonResponse([])));
     vi.stubGlobal('fetch', fetchMock);
 
     await api.eras({ lang: 'de' });
