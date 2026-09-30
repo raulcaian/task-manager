@@ -25,18 +25,30 @@ export const BUILD_STEPS = [
   },
 ];
 
-/**
- * How far each layer is revealed (0..1) for a scroll progress of 0..1.
- * The first layer is always visible; each later layer wipes in over its
- * own share of the scroll.
+/*
+ * The part of the scroll (0..1) in which each step is drawn. The gaps
+ * between the windows are pauses, so every stage stays on screen fully
+ * built for a moment before the next one starts.
  */
-export function layerReveal(progress, count = BUILD_STEPS.length) {
-  const position = progress * (count - 1);
-  return Array.from({ length: count }, (_, index) =>
-    index === 0 ? 1 : Math.min(1, Math.max(0, position - (index - 1)))
-  );
+export const STEP_WINDOWS = [
+  [0.0, 0.16],
+  [0.26, 0.42],
+  [0.52, 0.68],
+  [0.78, 0.94],
+];
+
+const clamp01 = (x) => Math.min(1, Math.max(0, x));
+
+/** How far each layer is revealed (0..1) for a scroll progress of 0..1. */
+export function layerReveal(progress) {
+  return STEP_WINDOWS.map(([start, end]) => clamp01((progress - start) / (end - start)));
 }
 
-/** Index of the step that is currently (mostly) on screen. */
-export const activeStep = (progress, count = BUILD_STEPS.length) =>
-  Math.min(count - 1, Math.round(progress * (count - 1)));
+/** The step being drawn or shown: the last one that has started. */
+export function activeStep(progress) {
+  let current = 0;
+  STEP_WINDOWS.forEach(([start], index) => {
+    if (progress >= start && index > 0) current = index;
+  });
+  return current;
+}
