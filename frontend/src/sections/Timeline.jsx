@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import EraBackdrop from '../components/EraBackdrop';
 import { api } from '../lib/api';
 import { useApi } from '../hooks/useApi';
 import { useScrollProgress } from '../hooks/useScrollProgress';
@@ -62,6 +63,15 @@ function Road({ eras }) {
   return (
     <div ref={sectionRef} className="road-section" style={{ height: `${eras.length * 100}vh` }}>
       <div className="road-stage" style={{ backgroundColor: era.bg_color }}>
+        <div
+          className="road-backdrops"
+          style={{ transform: `translateX(${(index - position) * 60}px)` }}
+        >
+          {eras.map((e, i) => (
+            <EraBackdrop key={e.id} era={e} visible={i === index} />
+          ))}
+        </div>
+        <div className="road-shade" aria-hidden="true" />
         <div className="road-stage__header container">
           <p className="eyebrow">03 · Heritage</p>
           <h2 id="timeline-title" className="road-stage__title">

@@ -21,6 +21,36 @@
   transition: background-color 0.8s;
 }
 
+/* Illustrated scenery for each era, between the sky and the road. */
+.road-backdrops {
+  position: absolute;
+  inset: 0 -80px 24vh;
+  transition: transform 0.2s linear;
+}
+
+.era-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out);
+}
+
+.era-backdrop.is-visible {
+  opacity: 1;
+}
+
+/* Keeps the text readable over the scenery. */
+.road-shade {
+  position: absolute;
+  inset: 0 0 24vh;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.55) 0%, rgb(0 0 0 / 0.15) 55%, transparent 80%),
+    linear-gradient(180deg, rgb(0 0 0 / 0.45) 0%, transparent 45%);
+  pointer-events: none;
+}
+
 .road-stage__header {
   position: absolute;
   inset: calc(var(--header-height) + var(--space-4)) 0 auto;

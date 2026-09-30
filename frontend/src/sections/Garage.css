@@ -51,33 +51,21 @@
 
 .painted-car {
   position: relative;
-  isolation: isolate; /* keeps the blend layers from mixing with the page */
+  display: grid;
   margin-block: var(--space-6);
 }
 
-.painted-car img {
+/* All paints share one grid cell; only the chosen one is visible. */
+.painted-car__layer {
+  grid-area: 1 / 1;
   width: 100%;
   height: auto;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-out);
 }
 
-.painted-car__tint {
-  position: absolute;
-  inset: 0;
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  pointer-events: none;
-  transition: background-color var(--duration-base);
-}
-
-.painted-car__tint--multiply {
-  mix-blend-mode: multiply;
-  opacity: 0.85;
-}
-
-.painted-car__tint--color {
-  mix-blend-mode: color;
+.painted-car__layer.is-shown {
+  opacity: 1;
 }
 
 .configurator__tagline {
@@ -173,6 +161,12 @@
   height: 1.5rem;
   border-radius: 50%;
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25);
+}
+
+.swatch__color--original {
+  background-size: 260% auto;
+  background-position: 45% 55%;
+  background-color: var(--color-surface-2);
 }
 
 .swatch__label {
