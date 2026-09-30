@@ -10,7 +10,7 @@ describe('App', () => {
 
   it('shows the hero heading', () => {
     render(<App />);
-    expect(screen.getByRole('heading', { level: 1, name: /from sketch\s*to street/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /precision\s*in motion/i })).toBeInTheDocument();
   });
 
   it('has a skip link to the main content', () => {
