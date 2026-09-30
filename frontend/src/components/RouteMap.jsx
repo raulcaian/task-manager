@@ -3,11 +3,11 @@ import { useI18n } from '../i18n/context';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Dark map tiles from CARTO, drawn from OpenStreetMap data (free for light use
-// with attribution). They match the dark design of the site.
-const TILES = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-const ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+// Standard OpenStreetMap tiles (free for light use with attribution; the
+// CARTO dark tiles now need an API key). CSS turns them dark to match the
+// site, see .route-map .leaflet-tile-pane in TripPlanner.css.
+const TILES = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 const ACCENT = '#c9895b';
 
@@ -23,7 +23,7 @@ export default function RouteMap({ trip }) {
 
   useEffect(() => {
     const map = L.map(containerRef.current, { scrollWheelZoom: false, attributionControl: true });
-    L.tileLayer(TILES, { attribution: ATTRIBUTION, subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+    L.tileLayer(TILES, { attribution: ATTRIBUTION, maxZoom: 19 }).addTo(map);
 
     // Set the view first: Leaflet only draws layers once the map has one.
     // No animation, so removing the map right away never hits a half-done zoom.

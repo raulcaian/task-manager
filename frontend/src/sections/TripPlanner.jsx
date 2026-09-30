@@ -173,8 +173,8 @@ function TripResult({ trip }) {
     [t('trip.distance'), formatKm(trip.distance_km, locale)],
     [t('trip.totalTime'), formatDuration(trip.total_minutes)],
     [t('trip.charging'), formatDuration(trip.charging_minutes)],
-    [t('trip.consumption'), `${formatNumber(trip.consumption_kwh_per_100km, 1, locale)} kWh/100 km`],
-    [t('trip.energy'), `${formatNumber(trip.energy_kwh, 0, locale)} kWh`],
+    [t('trip.consumption'), formatNumber(trip.consumption_kwh_per_100km, 1, locale), 'kWh/100 km'],
+    [t('trip.energy'), formatNumber(trip.energy_kwh, 0, locale), 'kWh'],
     [t('trip.arrival'), formatPercent(trip.arrival_soc)],
   ];
 
@@ -189,10 +189,13 @@ function TripResult({ trip }) {
       </p>
 
       <dl className="trip__stats">
-        {stats.map(([label, value]) => (
+        {stats.map(([label, value, unit]) => (
           <div key={label}>
             <dt>{label}</dt>
-            <dd>{value}</dd>
+            <dd>
+              {value}
+              {unit && <span className="trip__unit"> {unit}</span>}
+            </dd>
           </div>
         ))}
       </dl>

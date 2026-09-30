@@ -103,6 +103,13 @@
   font-weight: 600;
 }
 
+.trip__unit {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+}
+
 .route-map {
   width: 100%;
   height: 26rem;
@@ -110,6 +117,11 @@
   border-radius: var(--radius-md);
   background: #0e0f11; /* shown while the tiles load */
   z-index: 0; /* keeps Leaflet's panes under the fixed header */
+}
+
+.route-map .leaflet-tile-pane {
+  /* Turns the light OpenStreetMap tiles into a dark map; the route and markers are not affected. */
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.35);
 }
 
 .route-map .leaflet-control-attribution {
