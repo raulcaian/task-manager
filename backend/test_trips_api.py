@@ -17,7 +17,7 @@ class FakeRouteService:
     def __init__(self, distance_km: int = 450):
         self.distance_km = distance_km
 
-    def geocode(self, query: str, limit: int = 5) -> list[Place]:
+    def geocode(self, query: str, limit: int = 5, lang: str = "en") -> list[Place]:
         return [Place(label=f"{query}, Romania", lat=46.77, lon=23.62)]
 
     def route(self, origin: Place, destination: Place) -> Route:

@@ -28,6 +28,7 @@ def seed() -> None:
                 image_url=item["image_url"],
                 base_hue=item["base_hue"],
                 base_price_eur=item["base_price_eur"],
+                i18n=item.get("i18n"),
                 sort_order=order,
             )
             for spec_order, (label, value) in enumerate(item["specs"]):

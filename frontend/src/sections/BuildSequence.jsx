@@ -1,5 +1,7 @@
 import { useRef } from 'react';
 import { useScrollProgress } from '../hooks/useScrollProgress';
+import { useI18n } from '../i18n/context';
+import { formatNumber } from '../lib/format';
 import { activeStep, BUILD_STEPS, countUp, FINISH_STATS, layerReveal } from './buildSteps';
 import './BuildSequence.css';
 
@@ -11,7 +13,9 @@ import './BuildSequence.css';
  */
 export default function BuildSequence() {
   const sectionRef = useRef(null);
+  const { t, locale } = useI18n();
   const progress = useScrollProgress(sectionRef);
+  const stepTitle = (step) => t(`build.steps.${step.key}.title`);
   const reveal = layerReveal(progress);
   const current = activeStep(progress);
   const drawing = reveal.findIndex((value) => value > 0 && value < 1);
@@ -29,20 +33,20 @@ export default function BuildSequence() {
         ))}
 
         <div className="container build__header">
-          <p className="eyebrow">01 · Build</p>
+          <p className="eyebrow">{t('build.eyebrow')}</p>
           <h2 id="build-title" className="build__title">
-            Built in four steps
+            {t('build.title')}
           </h2>
         </div>
 
         <div className="build__car-area">
           <span className="build__watermark" aria-hidden="true">
-            {BUILD_STEPS[current].title}
+            {stepTitle(BUILD_STEPS[current])}
           </span>
           <div
             className="build__car"
             role="img"
-            aria-label={`Porsche 911, ${BUILD_STEPS[current].title.toLowerCase()} stage`}
+            aria-label={t('build.stage', { stage: stepTitle(BUILD_STEPS[current]).toLowerCase() })}
           >
             {BUILD_STEPS.map((step, index) => (
               <img
@@ -54,7 +58,7 @@ export default function BuildSequence() {
                 style={{ clipPath: `inset(0 ${(1 - reveal[index]) * 100}% 0 0)` }}
               />
             ))}
-            <Dimensions reveal={reveal[0]} fade={1 - reveal[1]} />
+            <Dimensions reveal={reveal[0]} fade={1 - reveal[1]} t={t} />
             {drawing >= 0 && (
               <span
                 className="build__scanline"
@@ -72,16 +76,16 @@ export default function BuildSequence() {
         >
           <dl>
             {FINISH_STATS.map((stat) => (
-              <div key={stat.label} className="build__stat">
-                <dt>{stat.label}</dt>
+              <div key={stat.key} className="build__stat">
+                <dt>{t(`build.stats.${stat.key}`)}</dt>
                 <dd>
-                  {countUp(stat.value, reveal[3]).toFixed(stat.decimals)}
+                  {formatNumber(countUp(stat.value, reveal[3]), stat.decimals, locale)}
                   <span>{stat.unit}</span>
                 </dd>
               </div>
             ))}
           </dl>
-          <p className="build__stats-source">911 Carrera (992.2) · manufacturer data</p>
+          <p className="build__stats-source">{t('build.source')}</p>
         </div>
 
         <ol className="container build__steps">
@@ -92,8 +96,8 @@ export default function BuildSequence() {
               aria-current={index === current ? 'step' : undefined}
             >
               <span className="build__step-number">0{index + 1}</span>
-              <span className="build__step-title">{step.title}</span>
-              <span className="build__step-text">{step.text}</span>
+              <span className="build__step-title">{stepTitle(step)}</span>
+              <span className="build__step-text">{t(`build.steps.${step.key}.text`)}</span>
               <span className="build__step-bar" aria-hidden="true">
                 <span style={{ transform: `scaleX(${reveal[index]})` }} />
               </span>
@@ -107,7 +111,7 @@ export default function BuildSequence() {
 
 // Blueprint dimension lines (wheelbase and overall length) that draw
 // themselves with the sketch and fade out when the clay arrives.
-function Dimensions({ reveal, fade }) {
+function Dimensions({ reveal, fade, t }) {
   const draw = (length, delay) => {
     const t = Math.min(1, Math.max(0, (reveal - delay) / (1 - delay)));
     return { strokeDasharray: length, strokeDashoffset: length * (1 - t) };
@@ -119,11 +123,11 @@ function Dimensions({ reveal, fade }) {
       <line x1="768" y1="190" x2="768" y2="312" style={draw(122, 0.3)} />
       <line x1="236" y1="305" x2="768" y2="305" style={draw(532, 0.45)} />
       <text x="502" y="296" textAnchor="middle" style={{ opacity: reveal > 0.8 ? 1 : 0 }}>
-        WHEELBASE 2,450 mm
+        {t('build.wheelbase')}
       </text>
       <line x1="30" y1="12" x2="970" y2="12" style={draw(940, 0.55)} />
       <text x="500" y="8" textAnchor="middle" style={{ opacity: reveal > 0.9 ? 1 : 0 }}>
-        LENGTH 4,519 mm
+        {t('build.length')}
       </text>
     </svg>
   );

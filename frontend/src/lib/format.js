@@ -1,10 +1,15 @@
-const euro = new Intl.NumberFormat('en-IE', {
-  style: 'currency',
-  currency: 'EUR',
-  maximumFractionDigits: 0,
-});
+const euroFormatters = new Map();
 
-export const formatEuro = (value) => euro.format(value);
+/** €125,900 in English, 125.900 € in German and Romanian. */
+export function formatEuro(value, locale = 'en-IE') {
+  if (!euroFormatters.has(locale)) {
+    euroFormatters.set(
+      locale,
+      new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
+    );
+  }
+  return euroFormatters.get(locale).format(value);
+}
 
 /** 205 -> "3 h 25 min", 45 -> "45 min". */
 export function formatDuration(minutes) {
@@ -15,6 +20,10 @@ export function formatDuration(minutes) {
   return rest === 0 ? `${hours} h` : `${hours} h ${rest} min`;
 }
 
-export const formatKm = (km) => `${Math.round(km).toLocaleString('en-GB')} km`;
+export const formatKm = (km, locale = 'en-GB') =>
+  `${Math.round(km).toLocaleString(locale === 'en-IE' ? 'en-GB' : locale)} km`;
 
 export const formatPercent = (value) => `${Math.round(value)} %`;
+
+export const formatNumber = (value, decimals, locale = 'en-IE') =>
+  value.toLocaleString(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });

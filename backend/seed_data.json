@@ -24,7 +24,51 @@
           "4"
         ]
       ],
-      "base_price_eur": 125900
+      "base_price_eur": 125900,
+      "i18n": {
+        "de": {
+          "tagline": "Coupé · Heckmotor",
+          "specs": [
+            [
+              "Karosserie",
+              "2+2-Coupé"
+            ],
+            [
+              "Motor",
+              "Heck"
+            ],
+            [
+              "Antrieb",
+              "Hinterrad"
+            ],
+            [
+              "Sitze",
+              "4"
+            ]
+          ]
+        },
+        "ro": {
+          "tagline": "Coupé · motor spate",
+          "specs": [
+            [
+              "Caroserie",
+              "Coupé 2+2"
+            ],
+            [
+              "Motor",
+              "Spate"
+            ],
+            [
+              "Tracțiune",
+              "Spate"
+            ],
+            [
+              "Locuri",
+              "4"
+            ]
+          ]
+        }
+      }
     },
     {
       "slug": "718-boxster",
@@ -50,7 +94,51 @@
           "2"
         ]
       ],
-      "base_price_eur": 72400
+      "base_price_eur": 72400,
+      "i18n": {
+        "de": {
+          "tagline": "Roadster · Mittelmotor",
+          "specs": [
+            [
+              "Karosserie",
+              "Roadster"
+            ],
+            [
+              "Motor",
+              "Mitte"
+            ],
+            [
+              "Antrieb",
+              "Hinterrad"
+            ],
+            [
+              "Sitze",
+              "2"
+            ]
+          ]
+        },
+        "ro": {
+          "tagline": "Roadster · motor central",
+          "specs": [
+            [
+              "Caroserie",
+              "Roadster"
+            ],
+            [
+              "Motor",
+              "Central"
+            ],
+            [
+              "Tracțiune",
+              "Spate"
+            ],
+            [
+              "Locuri",
+              "2"
+            ]
+          ]
+        }
+      }
     },
     {
       "slug": "taycan",
@@ -76,7 +164,51 @@
           "4–5"
         ]
       ],
-      "base_price_eur": 101500
+      "base_price_eur": 101500,
+      "i18n": {
+        "de": {
+          "tagline": "Sportlimousine · vollelektrisch",
+          "specs": [
+            [
+              "Karosserie",
+              "4-türige Limousine"
+            ],
+            [
+              "Antrieb",
+              "Elektrisch"
+            ],
+            [
+              "Traktion",
+              "Hinterrad / Allrad"
+            ],
+            [
+              "Sitze",
+              "4–5"
+            ]
+          ]
+        },
+        "ro": {
+          "tagline": "Sedan sport · complet electric",
+          "specs": [
+            [
+              "Caroserie",
+              "Sedan cu 4 uși"
+            ],
+            [
+              "Propulsie",
+              "Electrică"
+            ],
+            [
+              "Tracțiune",
+              "Spate / integrală"
+            ],
+            [
+              "Locuri",
+              "4–5"
+            ]
+          ]
+        }
+      }
     },
     {
       "slug": "cayenne",
@@ -102,7 +234,51 @@
           "5"
         ]
       ],
-      "base_price_eur": 105200
+      "base_price_eur": 105200,
+      "i18n": {
+        "de": {
+          "tagline": "SUV · Allradantrieb",
+          "specs": [
+            [
+              "Karosserie",
+              "5-türiger SUV"
+            ],
+            [
+              "Motor",
+              "Front"
+            ],
+            [
+              "Antrieb",
+              "Allrad"
+            ],
+            [
+              "Sitze",
+              "5"
+            ]
+          ]
+        },
+        "ro": {
+          "tagline": "SUV · tracțiune integrală",
+          "specs": [
+            [
+              "Caroserie",
+              "SUV cu 5 uși"
+            ],
+            [
+              "Motor",
+              "Față"
+            ],
+            [
+              "Tracțiune",
+              "Integrală"
+            ],
+            [
+              "Locuri",
+              "5"
+            ]
+          ]
+        }
+      }
     }
   ],
   "paints": [
@@ -110,37 +286,85 @@
       "name": "Original",
       "swatch_hex": "#8a8a8a",
       "hue": null,
-      "price_eur": 0
+      "price_eur": 0,
+      "i18n": {
+        "de": {
+          "name": "Original"
+        },
+        "ro": {
+          "name": "Original"
+        }
+      }
     },
     {
       "name": "Red",
       "swatch_hex": "#b3121b",
       "hue": 355,
-      "price_eur": 0
+      "price_eur": 0,
+      "i18n": {
+        "de": {
+          "name": "Rot"
+        },
+        "ro": {
+          "name": "Roșu"
+        }
+      }
     },
     {
       "name": "Blue",
       "swatch_hex": "#1f4fa3",
       "hue": 222,
-      "price_eur": 1850
+      "price_eur": 1850,
+      "i18n": {
+        "de": {
+          "name": "Blau"
+        },
+        "ro": {
+          "name": "Albastru"
+        }
+      }
     },
     {
       "name": "Green",
       "swatch_hex": "#2f5d3a",
       "hue": 140,
-      "price_eur": 1850
+      "price_eur": 1850,
+      "i18n": {
+        "de": {
+          "name": "Grün"
+        },
+        "ro": {
+          "name": "Verde"
+        }
+      }
     },
     {
       "name": "Silver",
       "swatch_hex": "#a9adb3",
       "hue": null,
-      "price_eur": 1850
+      "price_eur": 1850,
+      "i18n": {
+        "de": {
+          "name": "Silber"
+        },
+        "ro": {
+          "name": "Argintiu"
+        }
+      }
     },
     {
       "name": "Black",
       "swatch_hex": "#1a1b1d",
       "hue": null,
-      "price_eur": 0
+      "price_eur": 0,
+      "i18n": {
+        "de": {
+          "name": "Schwarz"
+        },
+        "ro": {
+          "name": "Negru"
+        }
+      }
     }
   ],
   "eras": [
@@ -151,7 +375,19 @@
       "photo_url": "/media/eras/1931.webp",
       "photo_caption": "VW Beetle prototype, 1936",
       "bg_color": "#1b1712",
-      "accent_color": "#c8a96a"
+      "accent_color": "#c8a96a",
+      "i18n": {
+        "de": {
+          "title": "Alles beginnt mit einem Konstruktionsbüro",
+          "description": "Ferdinand Porsche gründet in Stuttgart ein Konstruktions- und Ingenieurbüro. Hier liegen die Wurzeln von Porsche Engineering.",
+          "photo_caption": "VW-Käfer-Prototyp, 1936"
+        },
+        "ro": {
+          "title": "Totul începe cu un birou de proiectare",
+          "description": "Ferdinand Porsche deschide în Stuttgart un birou de proiectare și inginerie. Aici se află rădăcinile Porsche Engineering.",
+          "photo_caption": "Prototip VW Beetle, 1936"
+        }
+      }
     },
     {
       "year_label": "1948",
@@ -160,7 +396,19 @@
       "photo_url": "/media/eras/1948.webp",
       "photo_caption": "Porsche 356 \"No. 1\" Roadster, 1948",
       "bg_color": "#221b12",
-      "accent_color": "#d9b77a"
+      "accent_color": "#d9b77a",
+      "i18n": {
+        "de": {
+          "title": "Der erste Porsche",
+          "description": "Der 356 „Nr. 1“ Roadster, das erste Auto mit dem Namen Porsche, erhält in Gmünd in Österreich seine Zulassung.",
+          "photo_caption": "Porsche 356 „Nr. 1“ Roadster, 1948"
+        },
+        "ro": {
+          "title": "Primul Porsche",
+          "description": "356 „No. 1” Roadster, prima mașină care poartă numele Porsche, este omologat în Gmünd, Austria.",
+          "photo_caption": "Porsche 356 „No. 1” Roadster, 1948"
+        }
+      }
     },
     {
       "year_label": "1963",
@@ -169,7 +417,19 @@
       "photo_url": "/media/eras/1963.webp",
       "photo_caption": "Porsche 901, 1963",
       "bg_color": "#121820",
-      "accent_color": "#9fb6c8"
+      "accent_color": "#9fb6c8",
+      "i18n": {
+        "de": {
+          "title": "Eine Legende wird geboren",
+          "description": "Auf der IAA in Frankfurt wird der 901 vorgestellt. Später heißt er 911.",
+          "photo_caption": "Porsche 901, 1963"
+        },
+        "ro": {
+          "title": "Se naște o legendă",
+          "description": "Modelul 901 este prezentat la IAA din Frankfurt. Ulterior este redenumit 911.",
+          "photo_caption": "Porsche 901, 1963"
+        }
+      }
     },
     {
       "year_label": "1970",
@@ -178,7 +438,19 @@
       "photo_url": "/media/eras/1970.webp",
       "photo_caption": "Porsche 962 LM, Le Mans winner 1994",
       "bg_color": "#1d1008",
-      "accent_color": "#ff8a2a"
+      "accent_color": "#ff8a2a",
+      "i18n": {
+        "de": {
+          "title": "Sieg in Le Mans",
+          "description": "Porsche holt mit dem 917 den ersten Gesamtsieg bei den 24 Stunden von Le Mans.",
+          "photo_caption": "Porsche 962 LM, Le-Mans-Sieger 1994"
+        },
+        "ro": {
+          "title": "Victorie la Le Mans",
+          "description": "Porsche obține prima victorie la general în cursa de 24 de ore de la Le Mans, cu modelul 917.",
+          "photo_caption": "Porsche 962 LM, câștigător la Le Mans în 1994"
+        }
+      }
     },
     {
       "year_label": "1996",
@@ -187,7 +459,19 @@
       "photo_url": "/media/eras/1996.webp",
       "photo_caption": "Porsche Boxster, 1996",
       "bg_color": "#101318",
-      "accent_color": "#b8bcc3"
+      "accent_color": "#b8bcc3",
+      "i18n": {
+        "de": {
+          "title": "Ein Mittelmotor für alle",
+          "description": "Der Boxster bringt einen Mittelmotor-Roadster in die Serienproduktion.",
+          "photo_caption": "Porsche Boxster, 1996"
+        },
+        "ro": {
+          "title": "Motor central pentru toți",
+          "description": "Boxster aduce în producția de serie un roadster cu motor central.",
+          "photo_caption": "Porsche Boxster, 1996"
+        }
+      }
     },
     {
       "year_label": "2002",
@@ -196,7 +480,19 @@
       "photo_url": "/media/eras/2002.webp",
       "photo_caption": "Porsche Cayenne Electric",
       "bg_color": "#0d1410",
-      "accent_color": "#7fb58a"
+      "accent_color": "#7fb58a",
+      "i18n": {
+        "de": {
+          "title": "Ein neues Segment",
+          "description": "Der Cayenne ist der erste SUV von Porsche und eröffnet der Marke ein neues Segment.",
+          "photo_caption": "Porsche Cayenne Electric"
+        },
+        "ro": {
+          "title": "Un segment nou",
+          "description": "Cayenne este primul SUV Porsche și deschide un segment nou pentru marcă.",
+          "photo_caption": "Porsche Cayenne Electric"
+        }
+      }
     },
     {
       "year_label": "2019",
@@ -205,7 +501,19 @@
       "photo_url": "/media/eras/2019.webp",
       "photo_caption": "Porsche Taycan Turbo GT",
       "bg_color": "#05131c",
-      "accent_color": "#58c7ff"
+      "accent_color": "#58c7ff",
+      "i18n": {
+        "de": {
+          "title": "Vollelektrisch",
+          "description": "Der Taycan wird der erste vollelektrische Serien-Porsche.",
+          "photo_caption": "Porsche Taycan Turbo GT"
+        },
+        "ro": {
+          "title": "Complet electric",
+          "description": "Taycan devine primul Porsche de serie complet electric.",
+          "photo_caption": "Porsche Taycan Turbo GT"
+        }
+      }
     },
     {
       "year_label": "Today",
@@ -214,7 +522,19 @@
       "photo_url": "/media/eras/today.webp",
       "photo_caption": "Porsche 911 Turbo (992.2)",
       "bg_color": "#0a0a0b",
-      "accent_color": "#ff4d5e"
+      "accent_color": "#ff4d5e",
+      "i18n": {
+        "de": {
+          "title": "Das softwaredefinierte Auto",
+          "description": "Konnektivität, Fahrerassistenz, Daten und Cloud: Hier wird das nächste Kapitel geschrieben – und genau hier kommt Porsche Engineering ins Spiel.",
+          "photo_caption": "Porsche 911 Turbo (992.2)"
+        },
+        "ro": {
+          "title": "Mașina definită de software",
+          "description": "Conectivitate, asistență la condus, date și cloud: aici se scrie următorul capitol, iar aici intră în scenă Porsche Engineering.",
+          "photo_caption": "Porsche 911 Turbo (992.2)"
+        }
+      }
     }
   ],
   "ev_models": [
@@ -369,7 +689,17 @@
       "price_eur": 0,
       "available_for": null,
       "requires": [],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "Serienräder",
+          "description": "Die Räder, mit denen das Modell ausgeliefert wird."
+        },
+        "ro": {
+          "name": "Jante standard",
+          "description": "Jantele cu care vine modelul."
+        }
+      }
     },
     {
       "code": "wheels-sport",
@@ -379,7 +709,17 @@
       "price_eur": 2450,
       "available_for": null,
       "requires": [],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "21-Zoll-Sporträder",
+          "description": "Größere Räder mit mehr Platz für größere Bremsen."
+        },
+        "ro": {
+          "name": "Jante sport de 21 inch",
+          "description": "Jante mai mari, cu loc pentru frâne mai mari."
+        }
+      }
     },
     {
       "code": "wheels-aero",
@@ -392,7 +732,17 @@
         "cayenne"
       ],
       "requires": [],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "21-Zoll-Aeroräder",
+          "description": "Geschlossenes Design, das Elektromodellen mehr Reichweite bringt."
+        },
+        "ro": {
+          "name": "Jante aero de 21 inch",
+          "description": "Design închis care crește autonomia modelelor electrice."
+        }
+      }
     },
     {
       "code": "ceramic-brakes",
@@ -404,7 +754,17 @@
       "requires": [
         "wheels-sport"
       ],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "Keramik-Verbundbremsen",
+          "description": "Leichtere, standfeste Bremsen. Passen nur mit den 21-Zoll-Sporträdern."
+        },
+        "ro": {
+          "name": "Frâne ceramice compozite",
+          "description": "Frâne mai ușoare și rezistente la supraîncălzire. Încap doar cu jantele sport de 21 inch."
+        }
+      }
     },
     {
       "code": "sport-chrono",
@@ -414,7 +774,17 @@
       "price_eur": 2750,
       "available_for": null,
       "requires": [],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "Sport Chrono Paket",
+          "description": "Fahrmodusschalter, Launch Control und Stoppuhr im Armaturenbrett."
+        },
+        "ro": {
+          "name": "Pachetul Sport Chrono",
+          "description": "Selector de moduri de condus, launch control și cronometru pe bord."
+        }
+      }
     },
     {
       "code": "sport-exhaust",
@@ -429,7 +799,17 @@
       "requires": [
         "sport-chrono"
       ],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "Sportabgasanlage",
+          "description": "Eine lautere, schaltbare Abgasanlage. Nur für Verbrenner."
+        },
+        "ro": {
+          "name": "Evacuare sport",
+          "description": "O evacuare mai sonoră, cu clapete. Doar pentru modelele cu motor termic."
+        }
+      }
     },
     {
       "code": "performance-battery",
@@ -441,7 +821,17 @@
         "taycan"
       ],
       "requires": [],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "Performancebatterie Plus",
+          "description": "Eine größere Batterie für mehr Reichweite und Leistung."
+        },
+        "ro": {
+          "name": "Performance Battery Plus",
+          "description": "O baterie mai mare, pentru mai multă autonomie și putere."
+        }
+      }
     },
     {
       "code": "rear-axle-steering",
@@ -455,7 +845,17 @@
         "cayenne"
       ],
       "requires": [],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "Hinterachslenkung",
+          "description": "Wendiger in der Stadt, stabiler bei hohem Tempo."
+        },
+        "ro": {
+          "name": "Punte spate virătoare",
+          "description": "Mai agilă în oraș, mai stabilă la viteză mare."
+        }
+      }
     },
     {
       "code": "bucket-seats",
@@ -470,7 +870,17 @@
       "requires": [],
       "excludes": [
         "comfort-seats"
-      ]
+      ],
+      "i18n": {
+        "de": {
+          "name": "Vollschalensitze",
+          "description": "Leichte Carbonsitze für die Rennstrecke."
+        },
+        "ro": {
+          "name": "Scaune sport tip cupă",
+          "description": "Scaune ușoare din carbon, pentru circuit."
+        }
+      }
     },
     {
       "code": "comfort-seats",
@@ -482,7 +892,17 @@
       "requires": [],
       "excludes": [
         "bucket-seats"
-      ]
+      ],
+      "i18n": {
+        "de": {
+          "name": "Komfortsitze (18-Wege)",
+          "description": "Elektrische Sitze mit Memory und mehr Einstellmöglichkeiten."
+        },
+        "ro": {
+          "name": "Scaune confort cu 18 reglaje",
+          "description": "Scaune electrice cu memorie și mai multe reglaje."
+        }
+      }
     },
     {
       "code": "burmester",
@@ -492,7 +912,17 @@
       "price_eur": 5010,
       "available_for": null,
       "requires": [],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "Burmester Soundsystem",
+          "description": "Hochwertiger Surround-Sound."
+        },
+        "ro": {
+          "name": "Sistem audio Burmester",
+          "description": "Sunet surround de înaltă calitate."
+        }
+      }
     },
     {
       "code": "tow-hitch",
@@ -504,7 +934,17 @@
         "cayenne"
       ],
       "requires": [],
-      "excludes": []
+      "excludes": [],
+      "i18n": {
+        "de": {
+          "name": "Elektrische Anhängerkupplung",
+          "description": "Klappt auf Knopfdruck aus."
+        },
+        "ro": {
+          "name": "Cârlig de remorcare electric",
+          "description": "Se deschide la apăsarea unui buton."
+        }
+      }
     }
   ]
 }

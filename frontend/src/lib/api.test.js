@@ -23,6 +23,17 @@ describe('api', () => {
     expect(models).toEqual([{ slug: 'taycan' }]);
   });
 
+  it('adds the language to the URL', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse([]));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await api.eras({ lang: 'de' });
+    await api.geocode('Köln', { lang: 'ro' });
+
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/eras?lang=de');
+    expect(fetchMock.mock.calls[1][0]).toBe('/api/geocode?q=K%C3%B6ln&lang=ro');
+  });
+
   it('encodes the geocode query', async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse([]));
     vi.stubGlobal('fetch', fetchMock);

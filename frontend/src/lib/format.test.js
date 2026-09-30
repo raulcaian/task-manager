@@ -13,6 +13,11 @@ describe('format', () => {
     expect(formatEuro(125900)).toContain('€');
   });
 
+  it('uses the visitor\'s locale', () => {
+    expect(formatEuro(125900, 'de-DE')).toMatch(/125\.900/);
+    expect(formatKm(1234.6, 'de-DE')).toBe('1.235 km');
+  });
+
   it('formats kilometres', () => {
     expect(formatKm(1234.6)).toBe('1,235 km');
   });

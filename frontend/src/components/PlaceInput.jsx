@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react';
-import { api } from '../lib/api';
+import { useI18n } from '../i18n/context';
+import { api, errorMessage } from '../lib/api';
 
 /*
  * Text field with place suggestions from /api/geocode, following the
@@ -7,6 +8,7 @@ import { api } from '../lib/api';
  * Escape closes, and screen readers hear which option is active.
  */
 export default function PlaceInput({ label, value, onChange, placeholder }) {
+  const { t, lang } = useI18n();
   const id = useId();
   const listId = `${id}-list`;
   const [text, setText] = useState(value?.label ?? '');
@@ -24,21 +26,21 @@ export default function PlaceInput({ label, value, onChange, placeholder }) {
     // Wait until typing pauses, so we don't call the API on every key.
     const timer = setTimeout(() => {
       api
-        .geocode(query, { signal: controller.signal })
+        .geocode(query, { signal: controller.signal, lang })
         .then((places) => {
           setSuggestions(places);
           setActive(-1);
           setError(null);
         })
         .catch((err) => {
-          if (err.name !== 'AbortError') setError(err.message);
+          if (err.name !== 'AbortError') setError(errorMessage(err, t));
         });
     }, 300);
     return () => {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query, shouldSearch]);
+  }, [query, shouldSearch, lang, t]);
 
   const choose = (place) => {
     onChange(place);

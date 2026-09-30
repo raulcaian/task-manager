@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useI18n } from '../i18n/context';
 import BatteryChart from '../components/BatteryChart';
 import PlaceInput from '../components/PlaceInput';
 import RouteMap from '../components/RouteMap';
-import { api } from '../lib/api';
-import { formatDuration, formatKm, formatPercent } from '../lib/format';
+import { api, errorMessage } from '../lib/api';
+import { formatDuration, formatKm, formatNumber, formatPercent } from '../lib/format';
 import { osmDirectionsUrl } from '../lib/trip';
 import { useApi } from '../hooks/useApi';
 import './TripPlanner.css';
@@ -11,6 +12,7 @@ import './TripPlanner.css';
 const loadEvModels = ({ signal }) => api.evModels({ signal });
 
 export default function TripPlanner() {
+  const { t, locale } = useI18n();
   const { data: evModels, error: modelsError } = useApi(loadEvModels);
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -35,7 +37,7 @@ export default function TripPlanner() {
   const submit = async (event) => {
     event.preventDefault();
     if (!origin || !destination) {
-      setStatus({ busy: false, error: 'Choose a start and a destination from the suggestions.' });
+      setStatus({ busy: false, error: t('trip.pickPlaces') });
       return;
     }
     setStatus({ busy: true, error: null });
@@ -52,7 +54,7 @@ export default function TripPlanner() {
       setRecent((list) => [planned, ...list.filter((t) => t.id !== planned.id)].slice(0, 8));
       setStatus({ busy: false, error: null });
     } catch (err) {
-      setStatus({ busy: false, error: err.message });
+      setStatus({ busy: false, error: errorMessage(err, t) });
     }
   };
 
@@ -62,7 +64,7 @@ export default function TripPlanner() {
       setTrip(await api.trip(id));
       setStatus({ busy: false, error: null });
     } catch (err) {
-      setStatus({ busy: false, error: err.message });
+      setStatus({ busy: false, error: errorMessage(err, t) });
     }
   };
 
@@ -70,25 +72,21 @@ export default function TripPlanner() {
     <section id="trip-planner" className="section trip-planner" aria-labelledby="trip-title">
       <div className="container">
         <header className="section-header">
-          <p className="eyebrow">04 · EV Trip Planner</p>
+          <p className="eyebrow">{t('trip.eyebrow')}</p>
           <h2 id="trip-title" className="section-title">
-            Plan an electric road trip
+            {t('trip.title')}
           </h2>
-          <p className="section-lead">
-            The backend fetches the real road and its elevation, models the car&apos;s energy
-            use (speed, climbs, temperature, charging curve) and plans the charging stops.
-            Every trip is saved.
-          </p>
+          <p className="section-lead">{t('trip.lead')}</p>
         </header>
 
         <div className="trip-planner__layout">
           <form className="trip-form" onSubmit={submit} noValidate>
-            <PlaceInput label="From" value={origin} onChange={setOrigin} placeholder="e.g. Stuttgart" />
-            <PlaceInput label="To" value={destination} onChange={setDestination} placeholder="e.g. Munich" />
+            <PlaceInput label={t('trip.from')} value={origin} onChange={setOrigin} placeholder={t('trip.fromPlaceholder')} />
+            <PlaceInput label={t('trip.to')} value={destination} onChange={setDestination} placeholder={t('trip.toPlaceholder')} />
 
             <div className="field">
               <label className="field__label" htmlFor="trip-car">
-                Car
+                {t('trip.car')}
               </label>
               <select id="trip-car" className="input" value={evModel} onChange={(e) => setEvModel(e.target.value)}>
                 {(evModels ?? [{ slug: 'taycan', name: 'Taycan' }]).map((m) => (
@@ -97,26 +95,26 @@ export default function TripPlanner() {
                   </option>
                 ))}
               </select>
-              {modelsError && <span className="field__hint status--error">{modelsError.message}</span>}
+              {modelsError && <span className="field__hint status--error">{errorMessage(modelsError, t)}</span>}
             </div>
 
             <div className="field">
               <label className="field__label" htmlFor="trip-soc">
-                Battery at departure: <strong>{startSoc} %</strong>
+                {t('trip.battery')} <strong>{startSoc} %</strong>
               </label>
               <input id="trip-soc" type="range" min="15" max="100" step="5" value={startSoc} onChange={(e) => setStartSoc(Number(e.target.value))} />
             </div>
 
             <div className="field">
               <label className="field__label" htmlFor="trip-speed">
-                Motorway speed: <strong>{speed} km/h</strong>
+                {t('trip.speed')} <strong>{speed} km/h</strong>
               </label>
               <input id="trip-speed" type="range" min="80" max="180" step="10" value={speed} onChange={(e) => setSpeed(Number(e.target.value))} />
             </div>
 
             <div className="field">
               <label className="field__label" htmlFor="trip-temp">
-                Outside temperature (°C)
+                {t('trip.temperature')}
               </label>
               <input
                 id="trip-temp"
@@ -124,15 +122,15 @@ export default function TripPlanner() {
                 type="number"
                 min="-30"
                 max="50"
-                placeholder="Current weather"
+                placeholder={t('trip.temperaturePlaceholder')}
                 value={temperature}
                 onChange={(e) => setTemperature(e.target.value)}
               />
-              <span className="field__hint">Leave empty to use the current weather at the start.</span>
+              <span className="field__hint">{t('trip.temperatureHint')}</span>
             </div>
 
             <button className="button" type="submit" disabled={status.busy}>
-              {status.busy ? 'Planning…' : 'Plan the trip'}
+              {status.busy ? t('trip.planning') : t('trip.submit')}
             </button>
             <p className="status status--error" role="alert">
               {status.error}
@@ -140,23 +138,23 @@ export default function TripPlanner() {
           </form>
 
           <div className="trip-result" aria-live="polite">
-            {trip ? <TripResult trip={trip} /> : <p className="trip-result__empty">Your route will appear here.</p>}
+            {trip ? <TripResult trip={trip} /> : <p className="trip-result__empty">{t('trip.empty')}</p>}
           </div>
         </div>
 
         {recent.length > 0 && (
           <div className="recent-trips">
-            <h3 className="recent-trips__title">Recently planned</h3>
+            <h3 className="recent-trips__title">{t('trip.recent')}</h3>
             <ul>
-              {recent.map((t) => (
-                <li key={t.id}>
-                  <button type="button" className="recent-trip" onClick={() => openTrip(t.id)}>
+              {recent.map((r) => (
+                <li key={r.id}>
+                  <button type="button" className="recent-trip" onClick={() => openTrip(r.id)}>
                     <span className="recent-trip__route">
-                      {t.origin_label.split(',')[0]} → {t.destination_label.split(',')[0]}
+                      {r.origin_label.split(',')[0]} → {r.destination_label.split(',')[0]}
                     </span>
                     <span className="recent-trip__meta">
-                      {t.ev_model.name} · {formatKm(t.distance_km)} · {formatDuration(t.total_minutes)} ·{' '}
-                      {t.stop_count} {t.stop_count === 1 ? 'stop' : 'stops'}
+                      {r.ev_model.name} · {formatKm(r.distance_km, locale)} · {formatDuration(r.total_minutes)} ·{' '}
+                      {r.stop_count} {r.stop_count === 1 ? t('trip.stop') : t('trip.stops')}
                     </span>
                   </button>
                 </li>
@@ -170,13 +168,14 @@ export default function TripPlanner() {
 }
 
 function TripResult({ trip }) {
+  const { t, locale } = useI18n();
   const stats = [
-    ['Distance', formatKm(trip.distance_km)],
-    ['Total time', formatDuration(trip.total_minutes)],
-    ['Charging', formatDuration(trip.charging_minutes)],
-    ['Consumption', `${trip.consumption_kwh_per_100km.toFixed(1)} kWh/100 km`],
-    ['Energy', `${trip.energy_kwh.toFixed(0)} kWh`],
-    ['Arrival battery', formatPercent(trip.arrival_soc)],
+    [t('trip.distance'), formatKm(trip.distance_km, locale)],
+    [t('trip.totalTime'), formatDuration(trip.total_minutes)],
+    [t('trip.charging'), formatDuration(trip.charging_minutes)],
+    [t('trip.consumption'), `${formatNumber(trip.consumption_kwh_per_100km, 1, locale)} kWh/100 km`],
+    [t('trip.energy'), `${formatNumber(trip.energy_kwh, 0, locale)} kWh`],
+    [t('trip.arrival'), formatPercent(trip.arrival_soc)],
   ];
 
   return (
@@ -200,7 +199,7 @@ function TripResult({ trip }) {
 
       <RouteMap trip={trip} />
       <a className="trip__osm" href={osmDirectionsUrl(trip)} target="_blank" rel="noreferrer">
-        Open the route on OpenStreetMap
+        {t('trip.openMap')}
       </a>
 
       <BatteryChart trip={trip} />
@@ -211,14 +210,18 @@ function TripResult({ trip }) {
             <li key={index}>
               <span className="trip__stop-number">{index + 1}</span>
               <span>
-                Charge at km {Math.round(stop.at_km)}: {formatPercent(stop.arrive_soc)} →{' '}
-                {formatPercent(stop.depart_soc)} in {formatDuration(stop.charge_minutes)}
+                {t('trip.chargeAt', {
+                  km: Math.round(stop.at_km),
+                  from: formatPercent(stop.arrive_soc),
+                  to: formatPercent(stop.depart_soc),
+                  time: formatDuration(stop.charge_minutes),
+                })}
               </span>
             </li>
           ))}
         </ol>
       ) : (
-        <p className="status">No charging needed on the way.</p>
+        <p className="status">{t('trip.noCharging')}</p>
       )}
     </article>
   );

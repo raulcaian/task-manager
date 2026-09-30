@@ -6,8 +6,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from db import get_session
+from i18n import get_language, translated
 from models import CarModel, Era, Paint
-from schemas import CarModelOut, EraOut, PaintOut
+from schemas import CarModelOut, EraOut, PaintOut, SpecOut
 from configurator_api import router as configurator_router
 from contact import router as contact_router
 from trips import router as trips_router
@@ -41,18 +42,27 @@ def health():
     return {"status": "ok"}
 
 
+def localized_model(model: CarModel, lang: str) -> CarModelOut:
+    out = CarModelOut.model_validate(model)
+    out.tagline = translated(model, "tagline", lang)
+    specs = ((model.i18n or {}).get(lang) or {}).get("specs")
+    if specs:
+        out.specs = [SpecOut(label=label, value=value) for label, value in specs]
+    return out
+
+
 @app.get("/api/models", response_model=list[CarModelOut])
-def list_models(session: Session = Depends(get_session)):
+def list_models(session: Session = Depends(get_session), lang: str = Depends(get_language)):
     stmt = (
         select(CarModel)
         .options(selectinload(CarModel.specs))
         .order_by(CarModel.sort_order)
     )
-    return session.scalars(stmt).all()
+    return [localized_model(model, lang) for model in session.scalars(stmt).all()]
 
 
 @app.get("/api/models/{slug}", response_model=CarModelOut)
-def get_model(slug: str, session: Session = Depends(get_session)):
+def get_model(slug: str, session: Session = Depends(get_session), lang: str = Depends(get_language)):
     stmt = (
         select(CarModel)
         .options(selectinload(CarModel.specs))
@@ -61,14 +71,24 @@ def get_model(slug: str, session: Session = Depends(get_session)):
     model = session.scalars(stmt).first()
     if model is None:
         raise HTTPException(status_code=404, detail="Model not found")
-    return model
+    return localized_model(model, lang)
 
 
 @app.get("/api/paints", response_model=list[PaintOut])
-def list_paints(session: Session = Depends(get_session)):
-    return session.scalars(select(Paint).order_by(Paint.sort_order)).all()
+def list_paints(session: Session = Depends(get_session), lang: str = Depends(get_language)):
+    paints = session.scalars(select(Paint).order_by(Paint.sort_order)).all()
+    return [
+        PaintOut.model_validate(paint).model_copy(update={"label": translated(paint, "name", lang)})
+        for paint in paints
+    ]
 
 
 @app.get("/api/eras", response_model=list[EraOut])
-def list_eras(session: Session = Depends(get_session)):
-    return session.scalars(select(Era).order_by(Era.sort_order)).all()
+def list_eras(session: Session = Depends(get_session), lang: str = Depends(get_language)):
+    eras = session.scalars(select(Era).order_by(Era.sort_order)).all()
+    return [
+        EraOut.model_validate(era).model_copy(
+            update={field: translated(era, field, lang) for field in ("title", "description", "photo_caption")}
+        )
+        for era in eras
+    ]

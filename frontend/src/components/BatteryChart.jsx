@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { socProfile } from '../lib/trip';
+import { useI18n } from '../i18n/context';
 import { formatKm, formatPercent } from '../lib/format';
 
 const WIDTH = 640;
@@ -12,6 +13,7 @@ const PAD = { top: 16, right: 16, bottom: 28, left: 40 };
  * visually hidden table gives the same data to screen readers.
  */
 export default function BatteryChart({ trip }) {
+  const { t, locale } = useI18n();
   const [hover, setHover] = useState(null);
   const points = socProfile(trip);
   const innerW = WIDTH - PAD.left - PAD.right;
@@ -22,7 +24,7 @@ export default function BatteryChart({ trip }) {
 
   return (
     <figure className="battery-chart">
-      <figcaption className="battery-chart__title">Battery along the route</figcaption>
+      <figcaption className="battery-chart__title">{t('trip.batteryTitle')}</figcaption>
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} aria-hidden="true" onMouseLeave={() => setHover(null)}>
         {[0, 50, 100].map((soc) => (
           <g key={soc}>
@@ -34,13 +36,13 @@ export default function BatteryChart({ trip }) {
         ))}
         <line x1={PAD.left} x2={WIDTH - PAD.right} y1={y(10)} y2={y(10)} className="battery-chart__reserve" />
         <text x={WIDTH - PAD.right} y={y(10) - 6} textAnchor="end" className="battery-chart__axis">
-          10% reserve
+          {t('trip.reserve')}
         </text>
         <text x={PAD.left} y={HEIGHT - 6} className="battery-chart__axis">
           0 km
         </text>
         <text x={WIDTH - PAD.right} y={HEIGHT - 6} textAnchor="end" className="battery-chart__axis">
-          {formatKm(trip.distance_km)}
+          {formatKm(trip.distance_km, locale)}
         </text>
 
         <polyline points={line} className="battery-chart__line" />
@@ -57,22 +59,22 @@ export default function BatteryChart({ trip }) {
             y={Math.max(y(points[hover].soc) - 10, 14)}
             className="battery-chart__tooltip"
           >
-            {formatKm(points[hover].km)} · {formatPercent(points[hover].soc)}
+            {formatKm(points[hover].km, locale)} · {formatPercent(points[hover].soc)}
           </text>
         )}
       </svg>
       <table className="visually-hidden">
-        <caption>Battery level along the route</caption>
+        <caption>{t('trip.batteryTitle')}</caption>
         <thead>
           <tr>
-            <th scope="col">Distance</th>
-            <th scope="col">Battery</th>
+            <th scope="col">{t('trip.tableDistance')}</th>
+            <th scope="col">{t('trip.tableBattery')}</th>
           </tr>
         </thead>
         <tbody>
           {points.map((p, index) => (
             <tr key={index}>
-              <td>{formatKm(p.km)}</td>
+              <td>{formatKm(p.km, locale)}</td>
               <td>{formatPercent(p.soc)}</td>
             </tr>
           ))}

@@ -92,11 +92,13 @@ def sample_points(coordinates: list[list[float]], max_points: int) -> list[list[
 
 
 class RouteService:
-    def geocode(self, query: str, limit: int = 5) -> list[Place]:
+    def geocode(self, query: str, limit: int = 5, lang: str = "en") -> list[Place]:
+        # Photon names places in English, German or French; Romanian falls back to English.
+        photon_lang = lang if lang in ("en", "de") else "en"
         try:
             response = httpx.get(
                 PHOTON_URL,
-                params={"q": query, "limit": limit, "lang": "en"},
+                params={"q": query, "limit": limit, "lang": photon_lang},
                 headers=HEADERS,
                 timeout=TIMEOUT,
             )

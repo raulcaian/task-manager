@@ -4,6 +4,10 @@
  * /api/quote is the source of truth and reports every broken rule.
  */
 
+import { makeTranslator } from '../i18n/translate';
+
+const english = makeTranslator('en');
+
 export const WHEELS = 'wheels';
 export const DEFAULT_WHEELS = 'wheels-standard';
 
@@ -33,21 +37,14 @@ export function selectionForModel(selected, options, modelSlug) {
 }
 
 /** Human hint shown under an option, e.g. "Requires 21-inch sport wheels". */
-export function ruleHint(option, options) {
+export function ruleHint(option, options, t = english) {
   const names = (codes) =>
     codes.map((code) => options.find((o) => o.code === code)?.name ?? code).join(', ');
   const hints = [];
-  if (option.requires.length) hints.push(`Requires ${names(option.requires)}`);
-  if (option.excludes.length) hints.push(`Not with ${names(option.excludes)}`);
+  if (option.requires.length) hints.push(t('garage.requires', { names: names(option.requires) }));
+  if (option.excludes.length) hints.push(t('garage.notWith', { names: names(option.excludes) }));
   return hints.join(' · ');
 }
-
-export const CATEGORY_LABELS = {
-  wheels: 'Wheels',
-  performance: 'Performance',
-  interior: 'Interior',
-  practical: 'Practical',
-};
 
 export const ORIGINAL_PAINT = 'Original';
 

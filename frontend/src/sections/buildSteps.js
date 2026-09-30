@@ -1,28 +1,9 @@
+// Titles and texts are translated: build.steps.<key>.title / .text
 export const BUILD_STEPS = [
-  {
-    key: 'sketch',
-    title: 'Sketch',
-    image: '/media/build/sketch.webp',
-    text: 'Every Porsche starts as lines on paper: proportions, the roofline, the stance.',
-  },
-  {
-    key: 'clay',
-    title: 'Clay',
-    image: '/media/build/clay.webp',
-    text: 'A full-size clay model turns the drawing into surfaces you can walk around.',
-  },
-  {
-    key: 'paint',
-    title: 'Paint',
-    image: '/media/build/paint.webp',
-    text: 'Colour and materials are chosen and tested on the body.',
-  },
-  {
-    key: 'finish',
-    title: 'Finish',
-    image: '/media/build/finish.webp',
-    text: 'Glass, lights and wheels: the car is ready for the road.',
-  },
+  { key: 'sketch', image: '/media/build/sketch.webp' },
+  { key: 'clay', image: '/media/build/clay.webp' },
+  { key: 'paint', image: '/media/build/paint.webp' },
+  { key: 'finish', image: '/media/build/finish.webp' },
 ];
 
 /*
@@ -55,12 +36,13 @@ export function activeStep(progress) {
 
 // Shown when the car is finished. Manufacturer data for the 911 Carrera
 // (992.2) coupé, from porsche.com; 0–100 km/h without Sport Chrono.
+// Labels are translated: build.stats.<key>
 export const FINISH_STATS = [
-  { value: 394, decimals: 0, unit: 'PS', label: 'Power · 290 kW' },
-  { value: 450, decimals: 0, unit: 'Nm', label: 'Max torque' },
-  { value: 4.1, decimals: 1, unit: 's', label: '0–100 km/h' },
-  { value: 294, decimals: 0, unit: 'km/h', label: 'Top speed' },
-  { value: 3.0, decimals: 1, unit: 'L', label: 'Twin-turbo flat-six' },
+  { key: 'power', value: 394, decimals: 0, unit: 'PS' },
+  { key: 'torque', value: 450, decimals: 0, unit: 'Nm' },
+  { key: 'accel', value: 4.1, decimals: 1, unit: 's' },
+  { key: 'top', value: 294, decimals: 0, unit: 'km/h' },
+  { key: 'engine', value: 3.0, decimals: 1, unit: 'L' },
 ];
 
 /** Numbers count up as the finish stage is revealed (ease-out). */

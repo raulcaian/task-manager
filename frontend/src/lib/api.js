@@ -26,8 +26,15 @@ function messageFrom(body, status) {
   return `Request failed (${status})`;
 }
 
-export async function request(path, { method = 'GET', body, signal } = {}) {
+// Adds ?lang=de (or &lang=de) so the API answers in the visitor's language.
+export function withLanguage(path, lang) {
+  if (!lang) return path;
+  return `${path}${path.includes('?') ? '&' : '?'}lang=${encodeURIComponent(lang)}`;
+}
+
+export async function request(path, { method = 'GET', body, signal, lang } = {}) {
   const options = { method, signal, headers: { Accept: 'application/json' } };
+  path = withLanguage(path, lang);
   if (body !== undefined) {
     options.headers['Content-Type'] = 'application/json';
     options.body = JSON.stringify(body);
@@ -68,3 +75,10 @@ export const api = {
   contact: (payload, options) =>
     request('/contact', { ...options, method: 'POST', body: payload }),
 };
+
+/** A message for the visitor: translated for known cases, else the API's own text. */
+export function errorMessage(error, t) {
+  if (error?.status === 0) return t('errors.network');
+  if (error?.status === 429) return t('errors.tooMany');
+  return error?.message ?? String(error);
+}

@@ -19,7 +19,7 @@ function loadScript() {
  * Cloudflare Turnstile: a privacy-friendly captcha that usually needs no
  * clicks. It gives us a token; the backend checks the token with Cloudflare.
  */
-export default function Turnstile({ siteKey, onToken, resetKey }) {
+export default function Turnstile({ siteKey, onToken, resetKey, language = 'auto' }) {
   const container = useRef(null);
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export default function Turnstile({ siteKey, onToken, resetKey }) {
         widgetId = window.turnstile.render(container.current, {
           sitekey: siteKey,
           theme: 'dark',
+          language,
           callback: onToken,
           'expired-callback': () => onToken(null),
           'error-callback': () => onToken(null),
@@ -41,7 +42,7 @@ export default function Turnstile({ siteKey, onToken, resetKey }) {
       cancelled = true;
       if (widgetId !== undefined) window.turnstile?.remove(widgetId);
     };
-  }, [siteKey, onToken, resetKey]);
+  }, [siteKey, onToken, resetKey, language]);
 
   return <div ref={container} className="turnstile" />;
 }

@@ -15,6 +15,42 @@ from dataclasses import dataclass, field
 SINGLE_CHOICE_CATEGORIES = ("wheels",)
 VAT_RATE = 0.19  # German VAT; list prices already include it
 
+# The rule messages in every language the API speaks.
+MESSAGES = {
+    "en": {
+        "duplicate": "'{code}' is selected more than once.",
+        "unknown": "Unknown option '{code}'.",
+        "unavailable": "{name} is not available for this model.",
+        "requires": "{name} requires {required}.",
+        "conflict": "{name} cannot be combined with {other}.",
+        "single": "Choose exactly one option for {category}.",
+        "paint": "{name} paint",
+    },
+    "de": {
+        "duplicate": "„{code}“ ist mehrfach ausgewählt.",
+        "unknown": "Unbekannte Option „{code}“.",
+        "unavailable": "{name} ist für dieses Modell nicht erhältlich.",
+        "requires": "{name} erfordert {required}.",
+        "conflict": "{name} kann nicht mit {other} kombiniert werden.",
+        "single": "Wählen Sie genau eine Option für {category}.",
+        "paint": "Lackierung {name}",
+    },
+    "ro": {
+        "duplicate": "„{code}” este selectată de mai multe ori.",
+        "unknown": "Opțiune necunoscută „{code}”.",
+        "unavailable": "{name} nu este disponibil pentru acest model.",
+        "requires": "{name} necesită {required}.",
+        "conflict": "{name} nu se poate combina cu {other}.",
+        "single": "Alege exact o opțiune pentru {category}.",
+        "paint": "Vopsea {name}",
+    },
+}
+CATEGORY_NAMES = {
+    "en": {"wheels": "wheels"},
+    "de": {"wheels": "die Räder"},
+    "ro": {"wheels": "jante"},
+}
+
 
 @dataclass(frozen=True)
 class Option:
@@ -57,17 +93,20 @@ class ConfigurationError(ValueError):
         self.errors = errors
 
 
-def validate_selection(model_slug: str, options: dict[str, Option], selected: list[str]) -> list[str]:
+def validate_selection(
+    model_slug: str, options: dict[str, Option], selected: list[str], lang: str = "en"
+) -> list[str]:
     """Return every broken rule as a readable sentence (empty list = valid)."""
+    text = MESSAGES.get(lang, MESSAGES["en"])
     errors: list[str] = []
 
     duplicates = sorted({code for code in selected if selected.count(code) > 1})
     for code in duplicates:
-        errors.append(f"'{code}' is selected more than once.")
+        errors.append(text["duplicate"].format(code=code))
 
     unknown = [code for code in dict.fromkeys(selected) if code not in options]
     for code in unknown:
-        errors.append(f"Unknown option '{code}'.")
+        errors.append(text["unknown"].format(code=code))
 
     chosen = [options[code] for code in dict.fromkeys(selected) if code in options]
     chosen_codes = {option.code for option in chosen}
@@ -75,22 +114,23 @@ def validate_selection(model_slug: str, options: dict[str, Option], selected: li
     reported_conflicts: set[frozenset[str]] = set()
     for option in chosen:
         if option.available_for is not None and model_slug not in option.available_for:
-            errors.append(f"{option.name} is not available for this model.")
+            errors.append(text["unavailable"].format(name=option.name))
         for required in option.requires:
             if required not in chosen_codes:
                 required_name = options[required].name if required in options else required
-                errors.append(f"{option.name} requires {required_name}.")
+                errors.append(text["requires"].format(name=option.name, required=required_name))
         for excluded in option.excludes:
             pair = frozenset((option.code, excluded))
             # A rule may be written on one side or both; report each pair once.
             if excluded in chosen_codes and pair not in reported_conflicts:
                 reported_conflicts.add(pair)
-                errors.append(f"{option.name} cannot be combined with {options[excluded].name}.")
+                errors.append(text["conflict"].format(name=option.name, other=options[excluded].name))
 
     for category in SINGLE_CHOICE_CATEGORIES:
         in_category = [option for option in chosen if option.category == category]
         if len(in_category) != 1:
-            errors.append(f"Choose exactly one option for {category}.")
+            category_name = CATEGORY_NAMES.get(lang, {}).get(category, category)
+            errors.append(text["single"].format(category=category_name))
 
     return errors
 
@@ -103,14 +143,18 @@ def build_quote(
     paint_price_eur: int,
     options: dict[str, Option],
     selected: list[str],
+    lang: str = "en",
+    paint_code: str | None = None,
 ) -> Quote:
-    errors = validate_selection(model_slug, options, selected)
+    errors = validate_selection(model_slug, options, selected, lang)
+    paint_code = (paint_code or paint_name).lower()
     if errors:
         raise ConfigurationError(errors)
 
     quote = Quote()
     quote.items.append(LineItem("model", model_slug, model_name, base_price_eur))
-    quote.items.append(LineItem("paint", paint_name.lower(), f"{paint_name} paint", paint_price_eur))
+    paint_label = MESSAGES.get(lang, MESSAGES["en"])["paint"].format(name=paint_name)
+    quote.items.append(LineItem("paint", paint_code, paint_label, paint_price_eur))
     # Show options in catalogue order, whatever order the client sent.
     order = list(options)
     for code in sorted(set(selected), key=order.index):
